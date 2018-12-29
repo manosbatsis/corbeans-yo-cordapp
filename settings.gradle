@@ -1,0 +1,3 @@
+rootProject.name = 'corbeans-yo-cordapp'
+
+include 'cordapp'
