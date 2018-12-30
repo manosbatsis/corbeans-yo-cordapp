@@ -13,7 +13,6 @@ tags
 # General build files
 **/build/*
 !docs/build/*
-
 lib/dokka.jar
 
 ### JetBrains template
@@ -77,16 +76,9 @@ crashlytics-build.properties
 
 # docs related
 docs/virtualenv/
-/server/logs/
+target/
 
 ## sbt-microsite
 project/project/
-project/target/
-target/
-/docs/target/
-/target/
 build/
-/project/target/
-/project/project/
-/corbeans-corda-webserver/logs/
 /makeMicrosite

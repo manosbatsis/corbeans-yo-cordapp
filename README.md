@@ -1,10 +1,9 @@
-<p align="center">
-  <img src="https://www.corda.net/wp-content/uploads/2016/11/fg005_corda_b.png" alt="Corda" width="500">
-</p>
 
-# Yo! CorDapp
+A [Corbeans](https://manosbatsis.github.io/corbeans/) project example/template 
+based on Joel Dudley's [yo-cordapp](https://github.com/corda/samples/tree/release-V3/yo-cordapp) by R3.
 
-Send Yo's! to all your friends running Corda nodes!
+This project demonstrates how to apply corbeans in order to create a cordapp with Corda 4.0+ and 
+expose it via Spring Boot 2.0+.
 
 ## Pre-Requisites
 
@@ -12,20 +11,20 @@ You will need the following installed on your machine before you can start:
 
 * Latest [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) 
   installed and available on your path
-* [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) minimum version 2017.1
+* (Optional) [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) minimum version 2017.1
 * git
 
 ## Getting Set Up
 
 To get started, clone this repository with:
 
-     git clone https://github.com/corda/yo-cordapp
+     git clone https://github.com/manosbatsis/corbeans-yo-cordapp.git
 
 And change directories to the newly cloned repo:
 
-     cd yo-cordapp
+     cd corbeans-yo-cordapp
 
-## Building the Yo! CorDapp:
+## Building the Corbeans Yo! CorDapp:
 
 **Unix:** 
 
@@ -37,33 +36,28 @@ And change directories to the newly cloned repo:
 
 ## Running the Nodes:
 
-Once the build finishes, change directories to the folder where the newly
-built nodes are located:
-
-**Kotlin:**
-
-     cd build/nodes
-
-**Java:**
-
-     cd build/nodes
-
-The Gradle build script will have created a folder for each node. You'll
-see three folders, one for each node and a `runnodes` script. You can
-run the nodes with:
+Once the build finishes, you can run the nodes with:
 
 **Unix:**
 
-     ./runnodes
+```bash
+     ./cordapp/build/nodes/runnodes
+```
 
 **Windows:**
 
-    runnodes.bat
+```
+    cordapp/build/nodes/runnodes.bat
+```
 
 You should now have three Corda nodes running on your machine serving
-the Yo! CorDapp.
+the Yo! CorDapp
 
-Five windows will open in the terminal. One for each node's node shell, plus webservers for Party A and Party B.
+Four windows will open in the terminal. One for each node's node shell, 
+one for the Notary and one for the Spring Boot webserver exposing the nodes via REST.
+
+Alternatively you may have CordForm/runnodes create an individual Spring Boot webserver 
+per node, see bellow for instructions.
 
 ## Interacting with the CorDapp via HTTP
 
@@ -118,7 +112,7 @@ required to use the full X500 name in the node shell. Note you can't sent a Yo! 
 
 To see all the Yo's! in your vault:
 
-    run vaultQuery contractStateType: net.corda.yo.YoState
+    run vaultQuery contractStateType: mypackage.yo.YoState
 
 ## Further reading
 

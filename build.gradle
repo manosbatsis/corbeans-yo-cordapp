@@ -1,17 +1,19 @@
 buildscript {
-    ext.corda_release_group = 'net.corda'
-    ext.corda_release_version = 'corda-3.0'
-    ext.corda_gradle_plugins_version = '3.0.9'
-    ext.kotlin_version = '1.1.60'
-    ext.quasar_version = '0.7.6'
-    ext.junit_version = '4.12'
-
+    ext {
+        corda_release_group = 'net.corda'
+        corda_release_version = '4.0-SNAPSHOT'
+        corda_gradle_plugins_version = '4.0.37'
+        junit_version = '4.12'
+        kotlin_version = '1.2.71'
+        quasar_version = '0.7.10'
+    }
     repositories {
         mavenLocal()
         mavenCentral()
         jcenter()
-    }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
 
+    }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
@@ -27,39 +29,43 @@ allprojects {
         mavenCentral()
         maven { url 'https://jitpack.io' }
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+        //Needed only for Corda SNAPSHOT versions
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-dev/' }
+        //Needed only for Corbeans SNAPSHOT versions
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
+
+    // TODO: Change to your group and version
+    version = "0.19-SNAPSHOT"
+    group = 'com.github.manosbatsis.corbeans'
 }
 subprojects {
-
     apply plugin: 'kotlin'
-
-    sourceSets {
-        main {
-            resources {
-                srcDir "${project.rootDir}/config/dev"
-            }
-        }
-        test {
-            resources {
-                srcDir "${project.rootDir}/config/test"
-            }
-        }
-    }
-
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
-            languageVersion = "1.1"
-            apiVersion = "1.1"
+            languageVersion = "1.2"
+            apiVersion = "1.2"
             jvmTarget = "1.8"
+            freeCompilerArgs = ["-Xjsr305=strict"]
             javaParameters = true   // Useful for reflection.
         }
     }
-
-
     dependencies {
-        compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
         testCompile "junit:junit:$junit_version"
     }
+    // convenient report on all dependencies
+    task allDeps(type: DependencyReportTask) {}
+
+    configurations {
+        all {
+            // Stop getting deprecation warnings, we use stdlib-jdkX anyway
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
+        }
+    }
 }
+
+
 

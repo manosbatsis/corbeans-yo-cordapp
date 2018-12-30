@@ -1,0 +1,23 @@
+
+
+apply plugin: 'net.corda.plugins.cordapp'
+apply plugin: 'net.corda.plugins.quasar-utils'
+
+cordapp {
+    targetPlatformVersion 4
+    minimumPlatformVersion 3
+    workflow {
+        name "Yo Flows"
+        versionId 1
+        vendor "my company"
+        licence "my licence"
+    }
+}
+
+dependencies {
+    cordaCompile project(":cordapp-contract")
+    testCompile "$corda_release_group:corda-node-driver:$corda_release_version"
+}
+
+
+
