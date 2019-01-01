@@ -7,7 +7,7 @@ import net.corda.testing.core.DummyCommandData
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 val cordappPackages = listOf("mypackage.yo.contract", "net.corda.testing.contracts")
 

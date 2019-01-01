@@ -9,6 +9,7 @@ tags
 *.orig
 
 .gradle
+logs/
 
 # General build files
 **/build/*

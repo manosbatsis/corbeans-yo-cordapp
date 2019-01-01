@@ -1,11 +1,16 @@
 buildscript {
     ext {
+        corbeans_version = '0.19-SNAPSHOT'
         corda_release_group = 'net.corda'
         corda_release_version = '4.0-SNAPSHOT'
         corda_gradle_plugins_version = '4.0.37'
-        junit_version = '4.12'
+        dependency_management_version ="1.0.6.RELEASE"
+        junitVersion = '5.1.1'
         kotlin_version = '1.2.71'
+        kotlinx_coroutines_version = '0.30.2'
         quasar_version = '0.7.10'
+        spring_boot_version = '2.0.6.RELEASE'
+        springfox_version = '2.9.2'
     }
     repositories {
         mavenLocal()
@@ -15,10 +20,18 @@ buildscript {
 
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
+
+        // spring plugins
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+        classpath "io.spring.gradle:dependency-management-plugin:$dependency_management_version"
+
+        // kotlin plugins
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
     }
 }
 
@@ -50,17 +63,43 @@ subprojects {
             javaParameters = true   // Useful for reflection.
         }
     }
+    test {
+        useJUnitPlatform {
+            includeEngines 'junit-jupiter'
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+            }
+            exclude '**/*IntegrationTest.class'
+        }
+    }
+    // Run integration tests using junit5
+    task integrationTest(type: Test) {
+        useJUnitPlatform {
+            includeEngines 'junit-jupiter'
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+            }
+            include '**/*IntegrationTest.class'
+
+        }
+    }
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-        testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-        testCompile "junit:junit:$junit_version"
+        testCompile("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+        testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+
+        testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     }
     // convenient report on all dependencies
     task allDeps(type: DependencyReportTask) {}
 
     configurations {
         all {
-            // Stop getting deprecation warnings, we use stdlib-jdkX anyway
+            // Exclude old Junit since we use jupiter
+            exclude group: 'junit', module: 'junit'
+            // Stop deprecation warnings since we use stdlib-jdkX
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
         }

@@ -1,26 +1,28 @@
 package mypackage.yo.workflow
 
+import mypackage.yo.contract.YoState
 import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria.VaultCustomQueryCriteria
 import net.corda.core.node.services.vault.builder
 import net.corda.core.utilities.getOrThrow
 import net.corda.testing.node.MockNetwork
 import net.corda.testing.node.StartedMockNode
-import mypackage.yo.contract.YoState
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import kotlin.test.assertEquals
 
-val cordappPackages = listOf("mypackage.yo.contract", "mypackage.yo.workflow", "net.corda.testing.contracts")
+val cordappPackages = listOf("mypackage.yo.contract", "mypackage.yo.workflow")
 
 @Suppress("DEPRECATION")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
 class YoFlowTests {
     lateinit var network: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode
 
-    @Before
+    @BeforeAll
     fun setup() {
         network =  MockNetwork(cordappPackages = cordappPackages)
 
@@ -29,7 +31,7 @@ class YoFlowTests {
         network.runNetwork()
     }
 
-    @After
+    @AfterAll
     fun tearDown() {
         network.stopNodes()
     }
