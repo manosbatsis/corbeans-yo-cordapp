@@ -1,14 +1,14 @@
 /*
- *     Corbeans Yo! Cordapp: Sample/Template project for Corbeans.
- *     https://manosbatsis.github.io/corbeans/
+ * 	Corbeans Yo! Cordapp: Sample/Template project for Corbeans.
+ * 	https://manosbatsis.github.io/corbeans/
  *
- *     Copyright (C) 2018 Manos Batsis.
- *     Parts are Copyright 2016, R3 Limited.
+ * 	Copyright (C) 2018 Manos Batsis.
+ * 	Parts are Copyright 2016, R3 Limited.
  *
- *     This library is free software; you can redistribute it and/or
- *     modify it under the Apache License, Version 2.0 (the "License");
- *     you may not use this file except in compliance 	with the License.
- *     You may obtain a copy of the License at
+ * 	This library is free software; you can redistribute it and/or
+ * 	modify it under the Apache License, Version 2.0 (the "License");
+ * 	you may not use this file except in compliance 	with the License.
+ * 	You may obtain a copy of the License at
  *
  * 	  http://www.apache.org/licenses/LICENSE-2.0
  *
