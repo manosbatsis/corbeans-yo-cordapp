@@ -21,6 +21,7 @@
  */
 package mypackage.server.components
 
+import com.github.manosbatsis.corbeans.spring.boot.corda.util.NodeParams
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -35,7 +36,7 @@ import javax.annotation.PostConstruct
 
 
 /**
- *  Port of Corda samples Yo! API to a REST Controller.
+ *  Port of Corda samples' Yo! API to a REST Controller.
  *  Works for both a single/default node and multiples nodes with
  *  `yo` and `yo/{nodeName}` base paths respectively.
  */
@@ -46,19 +47,23 @@ open class YoController {
 
     companion object {
         private val logger = LoggerFactory.getLogger(YoController::class.java)
-        val NODE_NAME_DEFAULT = "default"
     }
 
+    protected lateinit var defaultNodeName: String
+
     @Autowired
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     protected lateinit var services: Map<String, YoService>
 
     @PostConstruct
     fun postConstruct() {
-        logger.debug("Yo! services for Corda nodes:: {}", services.keys)
+        // if single node config, use the only node name as default, else reserve explicitly for cordform
+        defaultNodeName = if (services.keys.size == 1) services.keys.first() else NodeParams.NODENAME_CORDFORM
+        logger.debug("Auto-configured RESTful services for Corda nodes:: {}, default node: {}", services.keys, defaultNodeName)
     }
 
     fun getService(optionalNodeName: Optional<String>): YoService {
-        val nodeName = if (optionalNodeName.isPresent) optionalNodeName.get() else NODE_NAME_DEFAULT
+        val nodeName = if (optionalNodeName.isPresent) optionalNodeName.get() else defaultNodeName
         return this.services.get("${nodeName}NodeService") ?: throw IllegalArgumentException("Node not found: $nodeName")
     }
 
