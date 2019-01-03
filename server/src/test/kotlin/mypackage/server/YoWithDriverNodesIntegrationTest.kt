@@ -1,26 +1,27 @@
-/**
- *     Corbeans: Corda integration for Spring Boot
- *     Copyright (C) 2018 Manos Batsis
+/*
+ *     Corbeans Yo! Cordapp: Sample/Template project for Corbeans.
+ *     https://manosbatsis.github.io/corbeans/
+ *
+ *     Copyright (C) 2018 Manos Batsis.
+ *     Parts are Copyright 2016, R3 Limited.
  *
  *     This library is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU Lesser General Public
- *     License as published by the Free Software Foundation; either
- *     version 3 of the License, or (at your option) any later version.
+ *     modify it under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance 	with the License.
+ *     You may obtain a copy of the License at
  *
- *     This library is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *     Lesser General Public License for more details.
+ * 	  http://www.apache.org/licenses/LICENSE-2.0
  *
- *     You should have received a copy of the GNU Lesser General Public
- *     License along with this library; if not, write to the Free Software
- *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
- *     USA
+ * 	Unless required by applicable law or agreed to in writing,
+ * 	software distributed under the License is distributed on an
+ * 	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * 	KIND, either express or implied.  See the License for the
+ * 	specific language governing permissions and limitations
+ * 	under the License.
  */
 package mypackage.server
 
-import com.github.manosbatsis.corbeans.corda.webserver.Application
-import com.github.manosbatsis.corbeans.test.integration.WithImplicitNetworkIT
+import com.github.manosbatsis.corbeans.test.integration.WithDriverNodesIT
 import mypackage.server.components.YoService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -34,25 +35,27 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import kotlin.test.assertTrue
 
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
+/**
+ * A sample integration test using ad hoc explicit network per `withDriverNodes`.
+ * Alternative to [YoImplicitNetworkIntegrationTest]
+ */
 @SpringBootTest(
         classes = arrayOf(Application::class),
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension::class)
-class YoIntegrationTest : WithImplicitNetworkIT() {
+@Suppress("SpringJavaInjectionPointsAutowiringInspection")
+class YoWithDriverNodesIntegrationTest : WithDriverNodesIT() {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(YoIntegrationTest::class.java)
+        private val logger = LoggerFactory.getLogger(YoWithDriverNodesIntegrationTest::class.java)
 
     }
-
-    override fun getCordappPackages(): List<String> = listOf("net.corda.finance")
 
     // autowire all created services, mapped by name
     @Autowired
     lateinit var services: Map<String, YoService>
 
-    // autowire custom services for specific nodes
+    // autowire the same services individually
     @Autowired
     @Qualifier("partyANodeService")
     lateinit var partyAService: YoService
@@ -73,9 +76,11 @@ class YoIntegrationTest : WithImplicitNetworkIT() {
 
     @Test
     fun `Can send Yo!`() {
-        val yo = this.restTemplate.getForObject("/yo/partyA/yo?target=PartyB", Map::class.java)
-        logger.debug("Yo response: {}", yo)
-        Assertions.assertTrue(yo.keys.contains("message"))
+        withDriverNodes {
+            val yo = this.restTemplate.getForObject("/yo/partyA/yo?target=PartyB", Map::class.java)
+            logger.debug("Yo response: {}", yo)
+            Assertions.assertTrue(yo.keys.contains("message"))
+        }
     }
 
 

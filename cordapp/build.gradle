@@ -16,10 +16,16 @@ cordapp {
 
 dependencies {
     cordaCompile project(":cordapp-workflow")
+
+    cordaCompile "net.corda:corda-jackson:$corda_release_version"
+    cordaCompile "net.corda:corda-rpc:$corda_release_version"
+    cordaCompile "net.corda:corda-core:$corda_release_version"
+    cordaRuntime "net.corda:corda:$corda_release_version"
+
     // Corda integration dependencies
     testCompile "$corda_release_group:corda-node-driver:$corda_release_version"
 }
-
+println "Corbeans webserverJar: ${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
 
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     directory "./build/nodes"
@@ -40,7 +46,9 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             address("localhost:10006")
             adminAddress("localhost:10046")
         }
-        //webPort 10007
+        // Automatically run at least a single, multi-node Spring Boot instance
+        webPort 10007
+        webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
         cordapps = []
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
@@ -51,7 +59,9 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             address("localhost:10009")
             adminAddress("localhost:10049")
         }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
         //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
         cordapps = []
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }

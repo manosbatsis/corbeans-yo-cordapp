@@ -1,26 +1,28 @@
-/**
- *     Corbeans: Corda integration for Spring Boot
- *     Copyright (C) 2018 Manos Batsis
+/*
+ *     Corbeans Yo! Cordapp: Sample/Template project for Corbeans.
+ *     https://manosbatsis.github.io/corbeans/
+ *
+ *     Copyright (C) 2018 Manos Batsis.
+ *     Parts are Copyright 2016, R3 Limited.
  *
  *     This library is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU Lesser General Public
- *     License as published by the Free Software Foundation; either
- *     version 3 of the License, or (at your option) any later version.
+ *     modify it under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance 	with the License.
+ *     You may obtain a copy of the License at
  *
- *     This library is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *     Lesser General Public License for more details.
+ * 	  http://www.apache.org/licenses/LICENSE-2.0
  *
- *     You should have received a copy of the GNU Lesser General Public
- *     License along with this library; if not, write to the Free Software
- *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
- *     USA
+ * 	Unless required by applicable law or agreed to in writing,
+ * 	software distributed under the License is distributed on an
+ * 	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * 	KIND, either express or implied.  See the License for the
+ * 	specific language governing permissions and limitations
+ * 	under the License.
  */
 package com.github.manosbatsis.corbeans.corda.webserver.config
 
-import com.fasterxml.jackson.databind.Module
 import net.corda.client.jackson.JacksonSupport
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.jackson.JsonComponentModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -33,17 +35,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 class JacksonConfig: WebMvcConfigurationSupport() {
 
-    /** Register any other custom (de)Serializer classes. */
-    @Bean
-    fun jsonComponentModule(): Module {
-        return JsonComponentModule()
-    }
-
     /** Force Spring/Jackson to use the provided Corda ObjectMapper for serialization */
     @Bean
-    fun mappingJackson2HttpMessageConverter(): MappingJackson2HttpMessageConverter {
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    fun mappingJackson2HttpMessageConverter(
+            @Autowired jsonComponentModule: JsonComponentModule
+    ): MappingJackson2HttpMessageConverter {
         var mapper = JacksonSupport.createNonRpcMapper()
-        mapper.registerModule(jsonComponentModule())
+        mapper.registerModule(jsonComponentModule)
 
         val converter = MappingJackson2HttpMessageConverter()
         converter.objectMapper = mapper

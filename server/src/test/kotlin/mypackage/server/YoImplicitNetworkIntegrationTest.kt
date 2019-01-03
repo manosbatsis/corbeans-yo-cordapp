@@ -21,10 +21,8 @@
  */
 package mypackage.server
 
-import com.github.manosbatsis.corbeans.test.integration.WithImplicitNetworkIT
+import com.github.manosbatsis.corbeans.test.integration.CorbeansSpringExtension
 import mypackage.server.components.YoService
-import net.corda.core.identity.Party
-import net.corda.core.utilities.NetworkHostAndPort
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -34,18 +32,22 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import kotlin.test.assertTrue
 
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
+/**
+ * A sample integration test using a single implicit network created by [CorbeansSpringExtension].
+ * Alternative to [YoWithDriverNodesIntegrationTest].
+ */
 @SpringBootTest(
         classes = arrayOf(Application::class),
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ExtendWith(SpringExtension::class)
-class NodeIntegrationTest : WithImplicitNetworkIT() {
+// Use CorbeansSpringExtension instead of SpringExtension
+@ExtendWith(CorbeansSpringExtension::class)
+@Suppress("SpringJavaInjectionPointsAutowiringInspection")
+class YoImplicitNetworkIntegrationTest {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(NodeIntegrationTest::class.java)
+        private val logger = LoggerFactory.getLogger(YoImplicitNetworkIntegrationTest::class.java)
 
     }
 
@@ -65,45 +67,19 @@ class NodeIntegrationTest : WithImplicitNetworkIT() {
     lateinit var restTemplate: TestRestTemplate
 
     @Test
-    fun `Can use both default node and multiple node controller endpoints`() {
-        //val defaultNodeMe = this.restTemplate.getForObject("/node/me", Map::class.java)
-        //assertEquals("me", defaultNodeMe.keys.first())
-
-        val defaultNodeMe = this.restTemplate.getForObject("/node/me", Map::class.java)
-        Assertions.assertEquals("me", defaultNodeMe.keys.first())
-        //val defaultNodeMe = this.restTemplate.getForObject("/node/me", Map::class.java)
-        //assertEquals("me", defaultNodeMe.keys.first())
-
-        val partyANodeMe = this.restTemplate.getForObject("/nodes/partyA/me", Map::class.java)
-        Assertions.assertEquals("me", partyANodeMe.keys.first())
-    }
-
-
-    @Test
-    fun `Can inject custom services`() {
+    fun `Can inject services`() {
         logger.info("services: {}", services)
-        assertNotNull(this.services)
         assertNotNull(this.partyAService)
+        assertNotNull(this.partyBService)
         assertTrue(this.services.keys.isNotEmpty())
     }
 
-
     @Test
-    fun `Can retrieve notaries`() {
-        val notaries: List<Party> = partyAService.notaries()
-        assertNotNull(notaries)
+    fun `Can send Yo!`() {
+        val yo = this.restTemplate.getForObject("/yo/partyA/yo?target=PartyB", Map::class.java)
+        logger.debug("Yo response: {}", yo)
+        Assertions.assertTrue(yo.keys.contains("message"))
     }
 
-    @Test
-    fun `Can retrieve flows`() {
-        val flows: List<String> = partyAService.flows()
-        assertNotNull(flows)
-    }
-
-    @Test
-    fun `Can retrieve addresses`() {
-        val addresses: List<NetworkHostAndPort> = partyAService.addresses()
-        assertNotNull(addresses)
-    }
 
 }

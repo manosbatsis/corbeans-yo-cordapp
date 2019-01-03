@@ -1,30 +1,37 @@
+/*
+ *     Corbeans Yo! Cordapp: Sample/Template project for Corbeans.
+ *     https://manosbatsis.github.io/corbeans/
+ *
+ *     Copyright (C) 2018 Manos Batsis.
+ *     Parts are Copyright 2016, R3 Limited.
+ *
+ *     This library is free software; you can redistribute it and/or
+ *     modify it under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance 	with the License.
+ *     You may obtain a copy of the License at
+ *
+ * 	  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * 	Unless required by applicable law or agreed to in writing,
+ * 	software distributed under the License is distributed on an
+ * 	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * 	KIND, either express or implied.  See the License for the
+ * 	specific language governing permissions and limitations
+ * 	under the License.
+ */
 package mypackage.server.components
 
-import com.github.manosbatsis.corbeans.spring.boot.corda.CordaNodeService
-import net.corda.core.contracts.ContractState
-import net.corda.core.contracts.StateAndRef
-import net.corda.core.crypto.SecureHash
-import net.corda.core.identity.Party
-import net.corda.core.internal.extractFile
-import net.corda.core.utilities.NetworkHostAndPort
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
-import java.io.FileNotFoundException
-import java.time.LocalDateTime
-import java.util.*
-import java.util.jar.JarInputStream
-import javax.annotation.PostConstruct
-import io.swagger.annotations.Api;
+import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import mypackage.yo.contract.YoState
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import java.util.*
+import javax.annotation.PostConstruct
 
 
 /**
