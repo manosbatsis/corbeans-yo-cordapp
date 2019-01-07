@@ -25,7 +25,7 @@ import com.github.manosbatsis.corbeans.spring.boot.corda.util.NodeParams
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
-import mypackage.yo.contract.YoState
+import mypackage.cordapp.YoContract
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -42,8 +42,8 @@ import javax.annotation.PostConstruct
  */
 @RestController
 @Api(tags = arrayOf("Yo!"),  description = "Send Yo!")
-@RequestMapping(path = arrayOf("yo", "yo/{nodeName}"))
-open class YoController {
+@RequestMapping(path = arrayOf("api/yo", "api/yo/{nodeName}"))
+class YoController {
 
     companion object {
         private val logger = LoggerFactory.getLogger(YoController::class.java)
@@ -62,6 +62,10 @@ open class YoController {
         logger.debug("Auto-configured RESTful services for Corda nodes:: {}, default node: {}", services.keys, defaultNodeName)
     }
 
+    /**
+     * Handle both "api/yo" and "api/yo/{nodeName}" by using `cordform` as the default
+     * node name to support optional dedicated webserver per node when using `runnodes`.
+     */
     fun getService(optionalNodeName: Optional<String>): YoService {
         val nodeName = if (optionalNodeName.isPresent) optionalNodeName.get() else defaultNodeName
         return this.services.get("${nodeName}NodeService") ?: throw IllegalArgumentException("Node not found: $nodeName")
@@ -71,12 +75,19 @@ open class YoController {
     @ApiOperation(value = "Send a Yo! the target party")
     fun yo(@PathVariable nodeName: Optional<String>,
            @ApiParam(value = "The target Party. You do not need to use the whole X500 name, using only the organisation works. In this case: PartyA, PartyB, Controller, etc.")
-           @RequestParam(required = true) target: String): ResponseEntity<String> {
+           @RequestParam(required = true) target: String): ResponseEntity<*> {
         val (status, message) = try {
             val result = getService(nodeName).sendYo(target)
             // Return the response.
-            HttpStatus.CREATED to "You just sent a Yo! to ${target} (Transaction ID: ${result.tx.id})"
+            HttpStatus.CREATED to mapOf<String, String>(
+                    "message" to "You just sent a Yo! to ${target} (Transaction ID: ${result.tx.id})",
+                    "sendingNode" to "$nodeName",
+                    "target" to "$target",
+                    "transactionId" to "${result.tx.id}"
+            )
         } catch (e: Exception) {
+            logger.error("Error sending Yo! to ${target}", e)
+            e.printStackTrace()
             HttpStatus.BAD_REQUEST to e.message
         }
         return ResponseEntity.status(status).body(message)
@@ -85,5 +96,6 @@ open class YoController {
     @GetMapping("yos")
     @ApiOperation(value = "Get every Yo!")
     fun yos(@PathVariable nodeName: Optional<String>) =
-            this.getService(nodeName).proxy().vaultQuery(YoState::class.java).states
+            this.getService(nodeName).proxy().vaultQuery(YoContract.YoState::class.java).states
+
 }

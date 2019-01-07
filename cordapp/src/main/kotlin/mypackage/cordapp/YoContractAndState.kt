@@ -19,7 +19,7 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.yo.contract
+package mypackage.cordapp
 
 import net.corda.core.contracts.*
 import net.corda.core.identity.Party
@@ -32,7 +32,7 @@ import javax.persistence.Entity
 import javax.persistence.Table
 
 // Contract and state.
-const val YO_CONTRACT_ID = "mypackage.yo.contract.YoContract"
+const val YO_CONTRACT_ID = "mypackage.cordapp.YoContract"
 
 class YoContract: Contract {
 
@@ -49,31 +49,32 @@ class YoContract: Contract {
         "The Yo! must be signed by the sender." using (command.signers.contains(yo.origin.owningKey))
         //"The Yo! must be signed by the recipient." using (command.signers.contains(yo.target.owningKey))
     }
-}
 
-// State.
-@BelongsToContract(YoContract::class)
-data class YoState(val origin: Party,
-                   val target: Party,
-                   val yo: String = "Yo!") : ContractState, QueryableState {
-    override val participants get() = listOf(target)
-    override fun toString() = "${origin.name}: $yo"
-    override fun supportedSchemas() = listOf(YoSchemaV1)
-    override fun generateMappedObject(schema: MappedSchema) = YoSchemaV1.PersistentYoState(
-            origin.name.toString(), target.name.toString(), yo)
+    // State.
+    data class YoState(val origin: Party,
+                       val target: Party,
+                       val yo: String = "Yo!") : ContractState, QueryableState {
+        override val participants get() = listOf(target)
+        override fun toString() = "${origin.name}: $yo"
+        override fun supportedSchemas() = listOf(YoSchemaV1)
+        override fun generateMappedObject(schema: MappedSchema) = YoSchemaV1.PersistentYoState(
+                origin.name.toString(), target.name.toString(), yo)
 
-    object YoSchema
+        object YoSchema
 
-    object YoSchemaV1 : MappedSchema(YoSchema.javaClass, 1, listOf(PersistentYoState::class.java)) {
-        @Entity
-        @Table(name = "yos")
-        class PersistentYoState(
-                @Column(name = "origin")
-                var origin: String = "",
-                @Column(name = "target")
-                var target: String = "",
-                @Column(name = "yo")
-                var yo: String = ""
-        ) : PersistentState()
+        object YoSchemaV1 : MappedSchema(YoSchema.javaClass, 1, listOf(PersistentYoState::class.java)) {
+            @Entity
+            @Table(name = "yos")
+            class PersistentYoState(
+                    @Column(name = "origin")
+                    var origin: String = "",
+                    @Column(name = "target")
+                    var target: String = "",
+                    @Column(name = "yo")
+                    var yo: String = ""
+            ) : PersistentState()
+        }
     }
 }
+
+

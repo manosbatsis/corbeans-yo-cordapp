@@ -23,25 +23,32 @@ package mypackage.server.components
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.CordaNodeServiceImpl
 import com.github.manosbatsis.corbeans.spring.boot.corda.util.NodeRpcConnection
-import mypackage.yo.workflow.YoFlow
+import mypackage.cordapp.YoFlow
 import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
+import org.slf4j.LoggerFactory
 
 
 class YoService(
         nodeRpcConnection: NodeRpcConnection
 ) : CordaNodeServiceImpl(nodeRpcConnection) {
 
+    companion object {
+        private val logger = LoggerFactory.getLogger(CordaNodeServiceImpl::class.java)
+    }
     /** Send a Yo! */
     fun sendYo(target: String): SignedTransaction {
         val proxy = this.nodeRpcConnection.proxy
         // Look-up the 'target'.
         val matches = proxy.partiesFromName(target, exactMatch = true)
+        logger.debug("sendYo, peers: {}", this.peers())
+        logger.debug("sendYo, peer names: {}", this.peerNames())
+        logger.debug("sendYo, target: {}, matches: {}", target, matches)
         // We only want one result!
         val to: Party = when {
-            matches.isEmpty() -> throw IllegalArgumentException("Target string doesn't match any nodes on the network.")
-            matches.size > 1 -> throw IllegalArgumentException("Target string matches multiple nodes on the network.")
+            matches.isEmpty() -> throw IllegalArgumentException("Target string \"$target\" doesn't match any nodes on the network.")
+            matches.size > 1 -> throw IllegalArgumentException("Target string \"$target\"  matches multiple nodes on the network.")
             else -> matches.single()
         }
         // Start the flow, block and wait for the response.

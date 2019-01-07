@@ -68,7 +68,7 @@ class YoWithDriverNodesIntegrationTest : WithDriverNodesIT() {
 
     @Test
     fun `Can inject services`() {
-        logger.info("services: {}", services)
+        logger.info("Can inject services: {}", services)
         assertNotNull(this.partyAService)
         assertNotNull(this.partyBService)
         assertTrue(this.services.keys.isNotEmpty())
@@ -77,9 +77,10 @@ class YoWithDriverNodesIntegrationTest : WithDriverNodesIT() {
     @Test
     fun `Can send Yo!`() {
         withDriverNodes {
-            val yo = this.restTemplate.getForObject("/yo/partyA/yo?target=PartyB", Map::class.java)
-            logger.debug("Yo response: {}", yo)
-            Assertions.assertTrue(yo.keys.contains("message"))
+            logger.info("Can send Yo!")
+            val yoResponse = this.restTemplate.getForObject("/api/yo/partyA/yo?target=partyB", Map::class.java)
+            logger.debug("Yo response: {}", yoResponse)
+            Assertions.assertTrue(yoResponse.keys.contains("message"))
         }
     }
 

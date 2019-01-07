@@ -1,6 +1,4 @@
 rootProject.name = 'corbeans-yo-cordapp'
 
-include 'cordapp-contract'
-include 'cordapp-workflow'
 include 'cordapp'
 include 'server'

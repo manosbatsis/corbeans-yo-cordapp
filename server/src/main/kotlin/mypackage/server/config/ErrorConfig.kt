@@ -19,24 +19,24 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.server
+package mypackage.server.config
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
-import org.springframework.boot.runApplication
-import org.springframework.context.annotation.ComponentScan
-
+import com.github.manosbatsis.scrudbeans.error.RestExceptionHandler
+import org.springframework.context.annotation.Bean
+import org.springframework.web.servlet.HandlerExceptionResolver
 
 /**
- * Our Spring Boot application.
+ * Automatically handle errors by creating a REST exception response,
+ * courtesy of `scrudbeans-error`, see:
+ * https://manosbatsis.github.io/scrudbeans/docs/restfulservices#error-responses
  */
-// Remove security and error handling
-@SpringBootApplication(exclude = arrayOf(SecurityAutoConfiguration::class, ErrorMvcAutoConfiguration::class))
-@ComponentScan(basePackages = arrayOf("mypackage", "com.github.manosbatsis.corbeans"))
-class Application
+class ErrorConfig {
 
-
-    fun main(args: Array<String>) {
-        runApplication<Application>(*args)
+    /**
+     * Register our custom `HandlerExceptionResolver`
+     */
+    @Bean
+    fun restExceptionHandler(): HandlerExceptionResolver {
+        return RestExceptionHandler()
     }
+}

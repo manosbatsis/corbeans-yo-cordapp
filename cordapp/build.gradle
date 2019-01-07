@@ -4,30 +4,26 @@ apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
 
 cordapp {
-    targetPlatformVersion 4
-    minimumPlatformVersion 4
-    contract {
-        name "Yo Cordapp"
-        versionId 1
-        vendor "my company"
-        licence "my licence"
+    info {
+        // TODO: Update with your own
+        name "Corbeans Yo! Cordapp"
+        vendor "Manos Batsis"
+        targetPlatformVersion corda_platform_version.toInteger()
+        minimumPlatformVersion corda_platform_version.toInteger()
     }
 }
 
 dependencies {
-    cordaCompile project(":cordapp-workflow")
+    // Sub-cordapps
+    cordaCompile "$corda_release_group:corda-core:$corda_release_version"
+    cordaCompile "$corda_release_group:corda-jackson:$corda_release_version"
+    cordaCompile "$corda_release_group:corda-rpc:$corda_release_version"
+    cordaRuntime "$corda_release_group:corda:$corda_release_version"
 
-    cordaCompile "net.corda:corda-jackson:$corda_release_version"
-    cordaCompile "net.corda:corda-rpc:$corda_release_version"
-    cordaCompile "net.corda:corda-core:$corda_release_version"
-    cordaRuntime "net.corda:corda:$corda_release_version"
-
-    // Corda integration dependencies
-    testCompile "$corda_release_group:corda-node-driver:$corda_release_version"
+    testImplementation ("$corda_release_group:corda-node-driver:$corda_release_version")
 }
-println "Corbeans webserverJar: ${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
 
-task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
+task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
     directory "./build/nodes"
     node {
         name "O=Notary,L=London,C=GB"
@@ -37,7 +33,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             address("localhost:10003")
             adminAddress("localhost:10043")
         }
-        cordapps = []
+        //cordapps = []
     }
     node {
         name "O=PartyA,L=London,C=GB"
@@ -49,7 +45,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         // Automatically run at least a single, multi-node Spring Boot instance
         webPort 10007
         webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
-        cordapps = []
+        //cordapps = []
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
     node {
@@ -62,7 +58,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
         //webPort 10010
         //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
-        cordapps = []
+        //cordapps = []
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
 }

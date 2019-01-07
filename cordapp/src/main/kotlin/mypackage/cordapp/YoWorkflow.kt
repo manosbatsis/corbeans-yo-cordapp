@@ -19,12 +19,9 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.yo.workflow
+package mypackage.cordapp
 
 import co.paralleluniverse.fibers.Suspendable
-import mypackage.yo.contract.YO_CONTRACT_ID
-import mypackage.yo.contract.YoContract
-import mypackage.yo.contract.YoState
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.requireThat
 import net.corda.core.flows.*
@@ -45,12 +42,12 @@ class YoFlow(val target: Party) : FlowLogic<SignedTransaction>() {
     companion object {
         object CREATING : ProgressTracker.Step("Creating a new Yo!")
         object SIGNING : ProgressTracker.Step("Verifying the Yo!")
-        object VERIFYING : ProgressTracker.Step("Verifying the Yo!")
+        object COLLECTING : ProgressTracker.Step("Collecting signatures for Yo!")
         object FINALISING : ProgressTracker.Step("Sending the Yo!") {
             override fun childProgressTracker() = FinalityFlow.tracker()
         }
 
-        fun tracker() = ProgressTracker(CREATING, SIGNING, VERIFYING, FINALISING)
+        fun tracker() = ProgressTracker(CREATING, SIGNING, COLLECTING, FINALISING)
     }
 
     @Suspendable
@@ -61,7 +58,7 @@ class YoFlow(val target: Party) : FlowLogic<SignedTransaction>() {
         // Retrieve the notary identity from the network map.
         val notary = serviceHub.networkMapCache.notaryIdentities.single()
         // Create the transaction components.
-        val state = YoState(me, target)
+        val state = YoContract.YoState(me, target)
         val requiredSigners = listOf(ourIdentity.owningKey, target.owningKey)
         val command = Command(YoContract.Send(), requiredSigners)
         // Create a transaction builder and add the components.
@@ -69,8 +66,7 @@ class YoFlow(val target: Party) : FlowLogic<SignedTransaction>() {
                 .addOutputState(state, YO_CONTRACT_ID)
                 .addCommand(command)
         // Verify the transaction.
-        progressTracker.currentStep = VERIFYING
-        txBuilder.verify(serviceHub)
+        progressTracker.currentStep = SIGNING
 
         // Sign the transaction.
         val signedTx = serviceHub.signInitialTransaction(txBuilder)
@@ -79,6 +75,7 @@ class YoFlow(val target: Party) : FlowLogic<SignedTransaction>() {
         val otherPartySession = initiateFlow(target)
 
         // Obtain the counter party's signature.
+        progressTracker.currentStep = COLLECTING
         val fullySignedTx = subFlow(CollectSignaturesFlow(
                 signedTx, listOf(otherPartySession), CollectSignaturesFlow.tracker()))
 
@@ -98,8 +95,11 @@ class YoFlowResponder(val otherPartySession: FlowSession) : FlowLogic<Unit>() {
         // Create our custom SignTransactionFlow
         val signTransactionFlow = object : SignTransactionFlow(otherPartySession, SignTransactionFlow.tracker()) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
+                // Ensure the transaction is sane
+                //stx.tx.toLedgerTransaction(serviceHub).verify()
+                // Ensure the transaction is a Yo
                 val output = stx.tx.outputs.single().data
-                "This must be a Yo transaction." using (output is YoState)
+                "This must be a Yo transaction." using (output is YoContract.YoState)
             }
         }
         // Sign if the check is successful

@@ -19,20 +19,18 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.yo.contract
+package mypackage.cordapp
 
 import net.corda.core.identity.CordaX500Name
-import net.corda.testing.contracts.DummyContract
-import net.corda.testing.contracts.DummyState
 import net.corda.testing.core.DummyCommandData
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
 import org.junit.jupiter.api.Test
 
-val cordappPackages = listOf("mypackage.yo.contract", "net.corda.testing.contracts")
 
 class YoContractTests {
+    val cordappPackages = listOf("mypackage.cordapp")
     private val ledgerServices = MockServices(cordappPackages)
     private val alice = TestIdentity(CordaX500Name("Alice", "New York", "US"))
     private val bob = TestIdentity(CordaX500Name("Bob", "Tokyo", "JP"))
@@ -41,12 +39,12 @@ class YoContractTests {
     @Test
     fun yoTransactionMustBeWellFormed() {
         // A pre-made Yo to Bob.
-        val yo = YoState(alice.party, bob.party)
+        val yo = YoContract.YoState(alice.party, bob.party)
         // Tests.
         ledgerServices.ledger {
             // Input state present.
             transaction {
-                input(DummyContract.PROGRAM_ID, DummyState())
+                input(YO_CONTRACT_ID, yo)
                 command(alice.publicKey, YoContract.Send())
                 output(YO_CONTRACT_ID, yo)
                 this.failsWith("There can be no inputs when Yo'ing other parties.")
@@ -65,7 +63,7 @@ class YoContractTests {
             }
             // Sending to yourself is not allowed.
             transaction {
-                output(YO_CONTRACT_ID, YoState(alice.party, alice.party))
+                output(YO_CONTRACT_ID, YoContract.YoState(alice.party, alice.party))
                 command(alice.publicKey, YoContract.Send())
                 this.failsWith("No sending Yo's to yourself!")
             }
