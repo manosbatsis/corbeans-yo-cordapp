@@ -19,7 +19,7 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.cordapp
+package mypackage.cordapp.contract
 
 import net.corda.core.contracts.*
 import net.corda.core.identity.Party
@@ -32,7 +32,7 @@ import javax.persistence.Entity
 import javax.persistence.Table
 
 // Contract and state.
-const val YO_CONTRACT_ID = "mypackage.cordapp.YoContract"
+const val YO_CONTRACT_ID = "mypackage.cordapp.contract.YoContract"
 
 class YoContract: Contract {
 

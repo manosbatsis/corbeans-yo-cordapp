@@ -19,8 +19,9 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.cordapp
+package mypackage.cordapp.workflow
 
+import mypackage.cordapp.contract.YoContract
 import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria.VaultCustomQueryCriteria
 import net.corda.core.node.services.vault.builder

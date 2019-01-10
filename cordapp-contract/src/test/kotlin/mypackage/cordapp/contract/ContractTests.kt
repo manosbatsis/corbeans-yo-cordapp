@@ -19,7 +19,7 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.cordapp
+package mypackage.cordapp.contract
 
 import net.corda.core.identity.CordaX500Name
 import net.corda.testing.core.DummyCommandData

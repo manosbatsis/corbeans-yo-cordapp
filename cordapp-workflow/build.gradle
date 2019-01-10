@@ -4,17 +4,21 @@ apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
 
 cordapp {
-    info {
+    targetPlatformVersion 4
+    minimumPlatformVersion 3
+    workflow {
         // TODO: Update with your own
-        name "Corbeans Yo! Cordapp"
+        name "Corbeans Yo! Cordapp Workflow"
         vendor "Manos Batsis"
+        versionId 1
         targetPlatformVersion corda_platform_version.toInteger()
         minimumPlatformVersion corda_platform_version.toInteger()
     }
 }
-
 dependencies {
-    // Sub-cordapps
+
+    cordaCompile project(":cordapp-contract")
+    // Corda deps
     cordaCompile "$corda_release_group:corda-core:$corda_release_version"
     cordaCompile "$corda_release_group:corda-jackson:$corda_release_version"
     cordaCompile "$corda_release_group:corda-rpc:$corda_release_version"
