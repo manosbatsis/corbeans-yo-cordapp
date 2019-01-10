@@ -66,12 +66,12 @@ class YoStateServiceIntegrationTest {
             }
         }
         // Send a Yo!
-        var yoResponse = this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
+        this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
         var yoStates = yoStateService.query()
         val yoCount = yoStates.states.size
         Assertions.assertTrue(yoCount > 0)
         // Send a second Yo!
-        yoResponse = this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
+        this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
         yoStates = yoStateService.query()
         // New query should return "previous count + 1" results
         Assertions.assertEquals(yoCount + 1, yoStates.states.size)
