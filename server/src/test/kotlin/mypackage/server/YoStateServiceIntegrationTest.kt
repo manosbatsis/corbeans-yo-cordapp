@@ -21,6 +21,7 @@
  */
 package mypackage.server
 
+import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
 import com.github.manosbatsis.corbeans.test.integration.CorbeansSpringExtension
 import mypackage.cordapp.YoContract
 import org.junit.jupiter.api.Assertions
