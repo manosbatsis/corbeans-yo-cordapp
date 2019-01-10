@@ -12,12 +12,4 @@ before_install:
 
 install: echo "skip 'gradle assemble' step"
 script: travis_wait ./gradlew build integrationTest deployNodes --console=plain
-
-before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
-cache:
-  directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+after_failure: cat /home/travis/build/manosbatsis/corbeans-yo-cordapp/server/build/reports/tests/integrationTest/index.html
