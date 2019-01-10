@@ -1,6 +1,6 @@
 /*
- * 	Corbeans Yo! Cordapp: Sample/Template project for Corbeans.
- * 	https://manosbatsis.github.io/corbeans/
+ * 	Corbeans Yo! Cordapp: Sample/Template project for Corbeans,
+ * 	see https://manosbatsis.github.io/corbeans
  *
  * 	Copyright (C) 2018 Manos Batsis.
  * 	Parts are Copyright 2016, R3 Limited.
@@ -21,12 +21,9 @@
  */
 package mypackage.server.components
 
-import com.github.manosbatsis.corbeans.spring.boot.corda.CordaNodeServiceImpl
-import com.github.manosbatsis.corbeans.spring.boot.corda.util.NodeRpcConnection
 import mypackage.cordapp.YoFlow
 import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
-import net.corda.core.utilities.getOrThrow
 import org.slf4j.LoggerFactory
 
 

@@ -1,6 +1,6 @@
 /*
- * 	Corbeans Yo! Cordapp: Sample/Template project for Corbeans.
- * 	https://manosbatsis.github.io/corbeans/
+ * 	Corbeans Yo! Cordapp: Sample/Template project for Corbeans,
+ * 	see https://manosbatsis.github.io/corbeans
  *
  * 	Copyright (C) 2018 Manos Batsis.
  * 	Parts are Copyright 2016, R3 Limited.
@@ -21,7 +21,6 @@
  */
 package mypackage.server.components
 
-import com.github.manosbatsis.corbeans.spring.boot.corda.util.NodeParams
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -72,7 +71,7 @@ class YoController {
     }
 
     @GetMapping("yo")
-    @ApiOperation(value = "Send a Yo! the target party")
+    @ApiOperation(value = "Send a Yo! to the target party")
     fun yo(@PathVariable nodeName: Optional<String>,
            @ApiParam(value = "The target Party. You do not need to use the whole X500 name, using only the organisation works. In this case: PartyA, PartyB, Controller, etc.")
            @RequestParam(required = true) target: String): ResponseEntity<*> {

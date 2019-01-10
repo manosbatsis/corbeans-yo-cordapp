@@ -1,5 +1,5 @@
-	Corbeans Yo! Cordapp: Sample/Template project for Corbeans.
-	https://manosbatsis.github.io/corbeans/
+	Corbeans Yo! Cordapp: Sample/Template project for Corbeans,
+	see https://manosbatsis.github.io/corbeans
 
 	Copyright (C) 2018 Manos Batsis.
 	Parts are Copyright 2016, R3 Limited.
