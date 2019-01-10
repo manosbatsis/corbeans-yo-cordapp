@@ -19,9 +19,11 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.cordapp
+package mypackage.cordapp.workflow
 
 import co.paralleluniverse.fibers.Suspendable
+import mypackage.cordapp.contract.YO_CONTRACT_ID
+import mypackage.cordapp.contract.YoContract
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.requireThat
 import net.corda.core.flows.*

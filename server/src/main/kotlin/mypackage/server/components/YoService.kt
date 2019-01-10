@@ -23,7 +23,7 @@ package mypackage.server.components
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.rpc.NodeRpcConnection
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNodeServiceImpl
-import mypackage.cordapp.YoFlow
+import mypackage.cordapp.workflow.YoFlow
 import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow

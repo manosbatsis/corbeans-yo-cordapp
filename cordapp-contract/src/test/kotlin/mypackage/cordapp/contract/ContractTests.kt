@@ -19,7 +19,7 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.cordapp
+package mypackage.cordapp.contract
 
 import net.corda.core.identity.CordaX500Name
 import net.corda.testing.core.DummyCommandData
@@ -30,7 +30,8 @@ import org.junit.jupiter.api.Test
 
 
 class YoContractTests {
-    val cordappPackages = listOf("mypackage.cordapp")
+    // Works as long as the main and test package names are  in sync
+    val cordappPackages = listOf(this.javaClass.`package`.name)
     private val ledgerServices = MockServices(cordappPackages)
     private val alice = TestIdentity(CordaX500Name("Alice", "New York", "US"))
     private val bob = TestIdentity(CordaX500Name("Bob", "Tokyo", "JP"))

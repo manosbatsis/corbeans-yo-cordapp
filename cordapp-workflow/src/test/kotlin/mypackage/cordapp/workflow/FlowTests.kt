@@ -19,8 +19,10 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.cordapp
+package mypackage.cordapp.workflow
 
+import mypackage.cordapp.contract.YO_CONTRACT_PACKAGE
+import mypackage.cordapp.contract.YoContract
 import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria.VaultCustomQueryCriteria
 import net.corda.core.node.services.vault.builder
@@ -40,7 +42,8 @@ import kotlin.test.assertEquals
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
 class YoFlowTests {
 
-    val cordappPackages = listOf("mypackage.cordapp")
+    // Works as long as the main and test package names are  in sync
+    val cordappPackages = listOf(YO_CONTRACT_PACKAGE, this.javaClass.`package`.name)
     lateinit var network: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode

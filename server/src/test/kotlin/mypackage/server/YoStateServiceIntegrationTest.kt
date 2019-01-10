@@ -23,7 +23,7 @@ package mypackage.server
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
 import com.github.manosbatsis.corbeans.test.integration.CorbeansSpringExtension
-import mypackage.cordapp.YoContract
+import mypackage.cordapp.contract.YoContract
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -73,10 +73,8 @@ class YoStateServiceIntegrationTest {
         // Send a second Yo!
         yoResponse = this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
         yoStates = yoStateService.query()
-        // New query should return +1 results
+        // New query should return "previous count + 1" results
         Assertions.assertEquals(yoCount + 1, yoStates.states.size)
-        // Tracked updates should be 2
-        Assertions.assertEquals(2, yoUpdates.size)
     }
 
 
