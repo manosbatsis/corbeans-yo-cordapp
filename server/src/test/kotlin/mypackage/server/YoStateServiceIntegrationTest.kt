@@ -73,10 +73,8 @@ class YoStateServiceIntegrationTest {
         // Send a second Yo!
         yoResponse = this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
         yoStates = yoStateService.query()
-        // New query should return +1 results
+        // New query should return "previous count + 1" results
         Assertions.assertEquals(yoCount + 1, yoStates.states.size)
-        // Tracked updates should be 2
-        Assertions.assertEquals(2, yoUpdates.size)
     }
 
 

@@ -32,7 +32,8 @@ import javax.persistence.Entity
 import javax.persistence.Table
 
 // Contract and state.
-const val YO_CONTRACT_ID = "mypackage.cordapp.contract.YoContract"
+val YO_CONTRACT_PACKAGE = YoContract::class.java.`package`.name
+val YO_CONTRACT_ID = YoContract::class.java.canonicalName
 
 class YoContract: Contract {
 
