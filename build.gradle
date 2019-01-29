@@ -1,9 +1,9 @@
 buildscript {
     ext {
         artemis_version = "2.6.2"
-        corbeans_version = '0.19-SNAPSHOT'
+        corbeans_version = '0.19'
         corda_release_group = 'net.corda'
-        corda_release_version = '4.0-SNAPSHOT'
+        corda_release_version = '4.0-RC03'
         // used for cordapp.info 
         corda_platform_version = '4'
         corda_gradle_plugins_version = '4.0.37'
