@@ -80,10 +80,10 @@ class YoController {
             val result = getService(nodeName).sendYo(target)
             // Return the response.
             HttpStatus.CREATED to mapOf<String, String>(
-                    "message" to "You just sent a Yo! to ${target} (Transaction ID: ${result.first().tx.id})",
+                    "message" to "You just sent a Yo! to ${target} (Transaction ID: ${result.tx.id})",
                     "sendingNode" to "$nodeName",
                     "target" to "$target",
-                    "transactionId" to "${result.first().tx.id}"
+                    "transactionId" to "${result.tx.id}"
             )
         } catch (e: Exception) {
             logger.error("Error sending Yo! to ${target}", e)

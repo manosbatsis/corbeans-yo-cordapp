@@ -28,7 +28,7 @@ import com.github.manosbatsis.partiture.flow.call.CallContext
 import com.github.manosbatsis.partiture.flow.call.CallContextEntry
 import com.github.manosbatsis.partiture.flow.delegate.initiating.PartitureFlowDelegateBase
 import com.github.manosbatsis.partiture.flow.io.input.InputConverter
-import com.github.manosbatsis.partiture.flow.io.output.FinalizedTxOutputConverter
+import com.github.manosbatsis.partiture.flow.io.output.SingleFinalizedTxOutputConverter
 import com.github.manosbatsis.partiture.flow.tx.initiating.ParticipantsAwareTransactionBuilder
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
 import mypackage.cordapp.contract.YO_CONTRACT_ID
@@ -44,24 +44,21 @@ import net.corda.core.transactions.SignedTransaction
 @InitiatingFlow
 @StartableByRPC
 class YoFlow(
-        input: List<Party>
-//  Flow:         IN ,         OUT
-) : PartitureFlow<List<Party>, List<SignedTransaction>>(
+        input: Party
+) : PartitureFlow<Party, SignedTransaction>(
         input = input, // Input can be anything
         inputConverter = YoInputConverter(),// Our custom IN converter
-        outputConverter = FinalizedTxOutputConverter()) // OUT build-in converter
+        outputConverter = SingleFinalizedTxOutputConverter()) // OUT build-in converter
 
-class YoInputConverter : PartitureFlowDelegateBase(), InputConverter<List<Party>> {
-    override fun convert(input: List<Party>): CallContext {
-        val entries = input.map { party ->
-            // Prepare a TX builder
-            val txBuilder = ParticipantsAwareTransactionBuilder(clientFlow.getFirstNotary())
-            txBuilder.addOutputState(YoContract.YoState(clientFlow.ourIdentity, party), YO_CONTRACT_ID)
-            txBuilder.addCommandFromData(YoContract.Send())
-            // Return a TX context with builder and participants
-            CallContextEntry(txBuilder, txBuilder.participants)
-        }
-        return CallContext(entries)
+class YoInputConverter : PartitureFlowDelegateBase(), InputConverter<Party> {
+    override fun convert(input: Party): CallContext {
+        // Prepare a TX builder
+        val txBuilder = ParticipantsAwareTransactionBuilder(clientFlow.getFirstNotary())
+        txBuilder.addOutputState(YoContract.YoState(clientFlow.ourIdentity, input), YO_CONTRACT_ID)
+        txBuilder.addCommandFromData(YoContract.Send())
+        // Return a TX context with builder and participants
+
+        return CallContext(CallContextEntry(txBuilder, txBuilder.participants))
     }
 }
 
