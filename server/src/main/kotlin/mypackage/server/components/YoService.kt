@@ -38,7 +38,7 @@ class YoService(
         private val logger = LoggerFactory.getLogger(CordaNodeServiceImpl::class.java)
     }
     /** Send a Yo! */
-    fun sendYo(target: String): SignedTransaction {
+    fun sendYo(target: String): List<SignedTransaction> {
         val proxy = this.nodeRpcConnection.proxy
         // Look-up the 'target'.
         val matches = proxy.partiesFromName(target, exactMatch = true)

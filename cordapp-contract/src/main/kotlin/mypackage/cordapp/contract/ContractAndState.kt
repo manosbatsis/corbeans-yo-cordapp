@@ -35,7 +35,7 @@ import javax.persistence.Table
 val YO_CONTRACT_PACKAGE = YoContract::class.java.`package`.name
 val YO_CONTRACT_ID = YoContract::class.java.canonicalName
 
-class YoContract: Contract {
+class YoContract : Contract {
 
     // Command.
     class Send : TypeOnlyCommandData()
@@ -55,9 +55,10 @@ class YoContract: Contract {
     data class YoState(val origin: Party,
                        val target: Party,
                        val yo: String = "Yo!") : ContractState, QueryableState {
-        override val participants get() = listOf(target)
-        override fun toString() = "${origin.name}: $yo"
+        override val participants get() = listOf(origin, target)
+        //override fun toString() = "${origin.name}: $yo"
         override fun supportedSchemas() = listOf(YoSchemaV1)
+
         override fun generateMappedObject(schema: MappedSchema) = YoSchemaV1.PersistentYoState(
                 origin.name.toString(), target.name.toString(), yo)
 
