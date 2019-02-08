@@ -29,7 +29,7 @@ import com.github.manosbatsis.partiture.flow.call.CallContextEntry
 import com.github.manosbatsis.partiture.flow.delegate.initiating.PartitureFlowDelegateBase
 import com.github.manosbatsis.partiture.flow.io.input.InputConverter
 import com.github.manosbatsis.partiture.flow.io.output.SingleFinalizedTxOutputConverter
-import com.github.manosbatsis.partiture.flow.tx.initiating.ParticipantsAwareTransactionBuilder
+import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
 import mypackage.cordapp.contract.YO_CONTRACT_ID
 import mypackage.cordapp.contract.YoContract
@@ -53,12 +53,11 @@ class YoFlow(
 class YoInputConverter : PartitureFlowDelegateBase(), InputConverter<Party> {
     override fun convert(input: Party): CallContext {
         // Prepare a TX builder
-        val txBuilder = ParticipantsAwareTransactionBuilder(clientFlow.getFirstNotary())
-        txBuilder.addOutputState(YoContract.YoState(clientFlow.ourIdentity, input), YO_CONTRACT_ID)
-        txBuilder.addCommandFromData(YoContract.Send())
+        val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
+                .addOutputState(YoContract.YoState(clientFlow.ourIdentity, input), YO_CONTRACT_ID)
+                .addCommand(YoContract.Send())
         // Return a TX context with builder and participants
-
-        return CallContext(CallContextEntry(txBuilder, txBuilder.participants))
+        return CallContext(CallContextEntry(txBuilder))
     }
 }
 
