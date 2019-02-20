@@ -1,12 +1,12 @@
 buildscript {
     ext {
         artemis_version = "2.6.2"
-        corbeans_version = '0.20'
+        corbeans_version = '0.21'
         corda_release_group = 'net.corda'
-        corda_release_version = '4.0-RC04'
+        corda_release_version = '4.0-RC07'
+        corda_gradle_plugins_version = '4.0.40'
         // used for cordapp.info 
         corda_platform_version = '4'
-        corda_gradle_plugins_version = '4.0.37'
         dependency_management_version ='1.0.6.RELEASE'
         hibernate_version = '5.3.6.Final'
         jackson_version = '2.9.5'
@@ -15,10 +15,10 @@ buildscript {
         kotlin_version = '1.2.71'
         kotlinx_coroutines_version = '0.30.2'
         quasar_version = '0.7.10'
-        scrudbeans_version = '0.7'
+        scrudbeans_version = '0.10'
         spring_boot_version = '2.1.1.RELEASE'
         springfox_version = '2.9.2'
-        partiture_version = '0.2'
+        partiture_version = '0.3'
     }
     // Customise dependency versions for spring-boot-dependencies
     ext['artemis.version'] = "$artemis_version"
