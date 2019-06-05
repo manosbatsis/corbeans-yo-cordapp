@@ -95,6 +95,7 @@ subprojects {
     }
     // Run integration tests using junit5
     task integrationTest(type: Test) {
+        maxParallelForks = 1
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
             testLogging {
