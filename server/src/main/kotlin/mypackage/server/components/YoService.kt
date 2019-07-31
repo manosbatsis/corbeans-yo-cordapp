@@ -43,7 +43,6 @@ class YoService(
         // Look-up the 'target'.
         val matches = proxy.partiesFromName(target, exactMatch = true)
         logger.debug("sendYo, peers: {}", this.peers())
-        logger.debug("sendYo, peer names: {}", this.peerNames())
         logger.debug("sendYo, target: {}, matches: {}", target, matches)
         // We only want one result!
         val to: Party = when {
