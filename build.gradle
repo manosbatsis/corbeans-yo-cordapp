@@ -1,9 +1,9 @@
 buildscript {
     ext {
         artemis_version = "2.6.2"
-        corbeans_version = '0.23'
+        corbeans_version = '0.26'
         corda_release_group = 'net.corda'
-        corda_release_version = '4.0'
+        corda_release_version = '4.1'
         corda_gradle_plugins_version = '4.0.45'
         // used for cordapp.info 
         corda_platform_version = '4'
@@ -65,6 +65,8 @@ allprojects {
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-dev/' }
         //Needed only for SNAPSHOT versions
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+        // For Gradle Tooling API
+        maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
     }
 
     // TODO: Change to your group and version
