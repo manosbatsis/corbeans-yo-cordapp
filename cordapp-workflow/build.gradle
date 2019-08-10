@@ -30,6 +30,9 @@ dependencies {
 }
 
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
+    nodeDefaults {
+        cordapp project(":cordapp-contract")
+    }
     directory "./build/nodes"
     node {
         name "O=Notary,L=London,C=GB"
@@ -38,6 +41,9 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
         rpcSettings {
             address("localhost:10003")
             adminAddress("localhost:10043")
+        }
+        projectCordapp {
+            deploy = false
         }
         //cordapps = []
     }
