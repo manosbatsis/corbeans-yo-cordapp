@@ -59,7 +59,7 @@ class YoStateServiceIntegrationTest {
                 .createStateService(YoContract.YoState::class.java)
         // Observe and count Yo! updates
         val yoUpdates = mutableListOf<YoContract.YoState>()
-        val yoStateVaultObservable = yoStateService.track().updates
+        val yoStateVaultObservable = yoStateService.trackBy().updates
         yoStateVaultObservable.subscribe { update ->
             update.produced.forEach { (state) ->
                 yoUpdates.add(state.data)
