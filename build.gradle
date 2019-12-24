@@ -1,24 +1,24 @@
 buildscript {
     ext {
         artemis_version = "2.6.2"
-        corbeans_version = '0.33'
+        corbeans_version = '0.34'
         corda_release_group = 'net.corda'
-        corda_release_version = '4.1'
-        corda_gradle_plugins_version = '4.0.45'
+        corda_release_version = '4.3'
+        corda_gradle_plugins_version = '4.0.47'
         // used for cordapp.info 
         corda_platform_version = '4'
         dependency_management_version ='1.0.6.RELEASE'
-        hibernate_version = '5.3.6.Final'
+        hibernate_version = '5.4.3.Final'
         jackson_version = '2.9.5'
         jcabi_manifests_version = '1.1'
         junitVersion = '5.1.1'
         kotlin_version = '1.2.71'
         kotlinx_coroutines_version = '0.30.2'
-        quasar_version = '0.7.10'
+        quasar_version = '0.7.12_r3'
         scrudbeans_version = '0.13'
         spring_boot_version = '2.1.1.RELEASE'
         springfox_version = '2.9.2'
-        partiture_version = '0.7'
+        partiture_version = '0.8'
     }
     // Customise dependency versions for spring-boot-dependencies
     ext['artemis.version'] = "$artemis_version"
@@ -30,6 +30,8 @@ buildscript {
         mavenCentral()
         jcenter()
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+        // Corda dependencies for the patched Quasar version
+        maven { url "https://software.r3.com/artifactory/corda-dependencies" }
 
     }
     dependencies {
@@ -67,6 +69,8 @@ allprojects {
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         // For Gradle Tooling API
         maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
+        // Corda dependencies for the patched Quasar version
+        maven { url "https://software.r3.com/artifactory/corda-dependencies" }
     }
 
     // TODO: Change to your group and version
