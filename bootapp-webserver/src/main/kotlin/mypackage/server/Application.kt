@@ -32,7 +32,11 @@ import org.springframework.context.annotation.ComponentScan
  * Our Spring Boot application.
  */
 // Remove security and error handling
-@SpringBootApplication(exclude = arrayOf(SecurityAutoConfiguration::class, ErrorMvcAutoConfiguration::class))
+@SpringBootApplication(
+        exclude = arrayOf(SecurityAutoConfiguration::class),
+        excludeName = ["org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration",
+            "org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration"]
+)
 @ComponentScan(basePackages = arrayOf("mypackage", "com.github.manosbatsis.corbeans"))
 class Application
 

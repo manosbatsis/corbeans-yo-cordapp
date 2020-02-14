@@ -21,8 +21,8 @@
  */
 package mypackage.server.components
 
-import com.github.manosbatsis.corbeans.spring.boot.corda.rpc.NodeRpcConnection
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNodeServiceImpl
+import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import mypackage.cordapp.workflow.YoFlow
 import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction

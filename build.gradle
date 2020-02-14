@@ -1,86 +1,185 @@
 buildscript {
+    Properties constants = new Properties()
+    file("$projectDir/./constants.properties").withInputStream { constants.load(it) }
+
     ext {
-        artemis_version = "2.6.2"
-        corbeans_version = '0.35'
-        corda_release_group = 'net.corda'
-        corda_release_version = '4.3'
-        corda_gradle_plugins_version = '4.0.47'
-        // used for cordapp.info 
-        corda_platform_version = '4'
-        dependency_management_version ='1.0.6.RELEASE'
-        hibernate_version = '5.4.3.Final'
-        jackson_version = '2.9.5'
-        jcabi_manifests_version = '1.1'
-        junitVersion = '5.1.1'
-        kotlin_version = '1.2.71'
+
+        //corda_gradle_plugins_version = '4.0.45'
+
+        corda_release_group = constants.getProperty("cordaReleaseGroup")
+        corda_core_release_group =  constants.getProperty("cordaCoreReleaseGroup")
+        corda_release_version = constants.getProperty("cordaVersion")
+        corda_core_release_version = constants.getProperty("cordaCoreVersion")
+        corda_gradle_plugins_version = constants.getProperty("gradlePluginsVersion")
+        kotlin_version = constants.getProperty("kotlinVersion")
+
+        junit_version = constants.getProperty("junitVersion")
+        quasar_version = constants.getProperty("quasarVersion")
+        log4j_version = constants.getProperty("log4jVersion")
+        slf4j_version = constants.getProperty("slf4jVersion")
+        corda_platform_version = constants.getProperty("platformVersion").toInteger()
+        //springboot
+        spring_version = '5.2.2.RELEASE'
+        spring_boot_version = '2.2.2.RELEASE'
+        spring_boot_gradle_plugin_version = '2.2.2.RELEASE'
+        // Misc
+        corda_solutions_version = '2.0'
         kotlinx_coroutines_version = '0.30.2'
-        quasar_version = '0.7.12_r3'
+        jackson_version = "2.9.7"
+        hibernate_version = '5.4.3.Final'
+        artemis_version = "2.6.2"
+        netty_version = constants.getProperty("nettyVersion")
+
+
+        dokka_version = '0.9.17'
+        jupiter_api = '5.3.2'
+        corbeans_version = '0.38'
         scrudbeans_version = '0.15'
-        spring_boot_version = '2.1.1.RELEASE'
-        springfox_version = '2.9.2'
+        vaultaire_version = '0.19'
         partiture_version = '0.8'
+        springdoc_version = '1.2.30'
+        quasar_group = 'co.paralleluniverse'
+        quasar_version = constants.getProperty("quasarVersion")
+        quasar_exclusions = [
+                'co.paralleluniverse**',
+                'groovy**',
+                'com.esotericsoftware.**',
+                'jdk**',
+                'junit**',
+                'kotlin**',
+                'net.rubygrapefruit.**',
+                'org.gradle.**',
+                'org.apache.**',
+                'org.jacoco.**',
+                'org.junit**',
+                'org.slf4j**',
+                'worker.org.gradle.**',
+                'com.nhaarman.mockito_kotlin**',
+                'org.assertj**',
+                'org.hamcrest**',
+                'org.mockito**',
+                'org.opentest4j**',
+                'org.springframework**',
+                'reactor.core.publisher**',
+                'com.github.manosbatsis.corbeans.spring.boot**'
+        ]
     }
-    // Customise dependency versions for spring-boot-dependencies
-    ext['artemis.version'] = "$artemis_version"
-    ext['hibernate.version'] = "$hibernate_version"
+    // Spring Dependency Management equivalents, for names see
+    // https://github.com/spring-projects/spring-boot/blob//spring-boot-dependencies/pom.xml
+    // -----------------------------------------\
+
+    ext['kotlin.version'] = "$kotlin_version"
+    ext['spring.version'] = "$spring_version"
+    ext['spring-boot.version'] = "$spring_boot_version"
     ext['jackson.version'] = "$jackson_version"
+    ext['hibernate.version'] = "$hibernate_version"
+    ext['artemis.version'] = "$artemis_version"
+    ext['jupiter_api'] = "$jupiter_api"
+    ext['netty.version'] = "$netty_version"
+    ext['slf4j.version'] = "$slf4j_version"
+    ext['log4j.version'] = "$log4j_version"
+
+
 
     repositories {
         mavenLocal()
         mavenCentral()
         jcenter()
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
-        // Corda dependencies for the patched Quasar version
-        maven { url "https://software.r3.com/artifactory/corda-dependencies" }
-
     }
+
     dependencies {
-        classpath "net.corda.plugins:publish-utils:$corda_gradle_plugins_version"
-        classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
-        classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
-        classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
-        classpath "net.corda.plugins:api-scanner:$corda_gradle_plugins_version"
-
-        // spring plugins
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
-        classpath "io.spring.gradle:dependency-management-plugin:$dependency_management_version"
-
         // kotlin plugins
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_gradle_plugin_version"
+        // plugins for asciidoctor
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.6'
+        // release to Maven Central through Sonatype OSSRH
+        // without the need to use Nexus GUI
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
+        classpath "gradle.plugin.com.dorongold.plugins:task-tree:1.3.1"
+        classpath "co.paralleluniverse:quasar-core:$quasar_version"
+
     }
 }
 
 plugins {
-    id "com.github.hierynomus.license" version "0.14.0"
+    // TODO The capsule plugin requires the newer DSL plugin block.It would be nice if we could unify all the plugins into one style,
+    // but the DSL has some restrictions e.g can't be used on the allprojects section. So we should revisit this if there are improvements in Gradle.
+    // Version 1.0.2 of this plugin uses capsule:1.0.1
+    id "us.kirchmeier.capsule" version "1.0.2"
+    id "com.github.hierynomus.license" version"0.15.0"
 }
 
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'license'
+license {
+    header rootProject.file("etc/license/header.txt")
+    includes(["**/*.java", "**/*.kt"])
+    excludes(["**/build/**", "**/config/dev/**"])
+    mapping {
+        kt='SLASHSTAR_STYLE'
+    }
+    strictCheck true
+}
+task licenseFormatForKotlin(type: com.hierynomus.gradle.license.tasks.LicenseFormat) {
+    source = fileTree(dir: "./").include("**/*.kt")
+}
+licenseFormat.dependsOn licenseFormatForKotlin
+
+
 allprojects {
+    apply from: "${rootProject.projectDir}/repositories.gradle"
+
     repositories {
         mavenLocal()
         jcenter()
         mavenCentral()
+        maven { url 'https://software.r3.com/artifactory/corda' }
         maven { url 'https://jitpack.io' }
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
-        //Needed only for Corda SNAPSHOT versions
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-dev/' }
-        //Needed only for SNAPSHOT versions
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-        // For Gradle Tooling API
-        maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
-        // Corda dependencies for the patched Quasar version
-        maven { url "https://software.r3.com/artifactory/corda-dependencies" }
     }
 
-    // TODO: Change to your group and version
-    version = "0.19-SNAPSHOT"
-    group = 'com.github.manosbatsis.corbeans'
+    apply plugin: 'project-report'
+    apply plugin: "com.dorongold.task-tree"
+    apply plugin: 'idea'
+
+    idea {
+        module {
+            downloadJavadoc = false
+            downloadSources = true
+        }
+    }
+
+    sourceSets {
+        main {
+            resources {
+                srcDir rootProject.file("config/dev")
+            }
+        }
+    }
+
+    task allDeps(type: DependencyReportTask) {}
+
 }
+
+
 subprojects {
-    apply plugin: 'license'
+    apply plugin: 'java'
     apply plugin: 'kotlin'
-    apply plugin: 'maven'
+
+    jar {
+        // This makes the JAR's SHA-256 hash repeatable.
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+
+
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             languageVersion = "1.2"
@@ -91,57 +190,73 @@ subprojects {
         }
     }
     test {
+        // Use jupiter
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
             testLogging {
                 events "passed", "skipped", "failed", "standardOut", "standardError"
             }
+            include '**/*Test.class'
             exclude '**/*IntegrationTest.class'
         }
     }
     // Run integration tests using junit5
+    configurations {
+        // Adding a configuration that extends existing configuration:
+        //(testCompile was added by the java plugin)
+        integrationTestCompile.extendsFrom(testCompile)
+    }
     task integrationTest(type: Test) {
         maxParallelForks = 1
+        jvmArgs "-XX:MaxPermSize=61470m"
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
             testLogging {
                 events "passed", "skipped", "failed", "standardOut", "standardError"
             }
             include '**/*IntegrationTest.class'
+            exclude '**/SwaggerExporterIntegrationTest.class'
 
         }
     }
-    dependencies {
-        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-        compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-        testCompile("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+    dependencies{
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
+        implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
 
-        testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+        testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_api"
+        testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiter_api")
 
-        testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     }
-    // convenient report on all dependencies
-    task allDeps(type: DependencyReportTask) {}
+}
 
-    configurations {
-        all {
-            // Exclude old Junit since we use jupiter
-            //exclude group: 'junit', module: 'junit'
-            // Stop deprecation warnings since we use stdlib-jdkX
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
-        }
-    }
 
-    license {
-        header rootProject.file("${rootProject.rootDir}/etc/license/header-asl.txt")
-        includes(["**/*.java", "**/*.kt"])
-        mapping {
-            kt='SLASHSTAR_STYLE'
-        }
-        strictCheck true
+apply plugin: 'net.corda.plugins.cordapp'
+apply plugin: 'net.corda.plugins.cordformation'
+apply plugin: 'net.corda.plugins.quasar-utils'
+
+
+dependencies {
+    // Corda dependencies.
+    cordaCompile "$corda_core_release_group:corda-core:$corda_core_release_version"
+    cordaRuntime "$corda_release_group:corda-node-api:$corda_release_version"
+    cordaRuntime "$corda_release_group:corda:$corda_release_version"
+
+    // CorDapp dependencies.
+    //cordapp project(":workflows")
+    //cordapp project(":contracts")
+
+    cordaCompile "org.apache.logging.log4j:log4j-slf4j-impl:${log4j_version}"
+    cordaCompile "org.apache.logging.log4j:log4j-web:${log4j_version}"
+    cordaCompile "org.slf4j:jul-to-slf4j:$slf4j_version"
+}
+
+cordapp {
+    info {
+        name "CorDapp Template"
+        vendor "Corda Open Source"
+        targetPlatformVersion corda_platform_version
+        minimumPlatformVersion corda_platform_version
     }
 }

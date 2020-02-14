@@ -1,0 +1,48 @@
+
+//apply plugin: 'application'
+//apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'net.corda.plugins.quasar-utils'
+apply plugin: 'org.asciidoctor.convert'
+
+springBoot {
+	buildInfo()
+	mainClassName = "com.github.manosbatsis.corbeans.corda.webserver.ApplicationKt"
+}
+
+jar {
+	enabled = false
+}
+
+bootJar {
+	//classifier = 'boot'
+}
+
+dependencies {
+
+	// CorDapp dependencies.
+	compile project(":cordapp-workflow")
+	compile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter:$corbeans_version")
+	compile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-bnms-starter:$corbeans_version")
+	// Add support for RESTful errors
+	compile ("com.github.manosbatsis.scrudbeans:scrudbeans-error:$scrudbeans_version")
+	compile("org.springframework.boot:spring-boot-starter-actuator:$spring_boot_version"){
+		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+	}
+	compile("org.springframework.boot:spring-boot-starter-web:$spring_boot_version") {
+		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+	}
+	// OpenAPI/SpringDoc
+	compile "org.springdoc:springdoc-openapi-ui:${springdoc_version}"
+	compile ("org.springdoc:springdoc-openapi-data-rest:${springdoc_version}"){
+		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+	}
+	compileOnly("org.springframework.boot:spring-boot-configuration-processor:$spring_boot_version"){
+		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+	}
+
+	testCompile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_version"){
+		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+	}
+}
