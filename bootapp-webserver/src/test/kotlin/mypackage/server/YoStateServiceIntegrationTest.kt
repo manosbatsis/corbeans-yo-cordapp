@@ -22,13 +22,17 @@
 package mypackage.server
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
+import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNodeService
 import com.github.manosbatsis.corbeans.test.integration.CorbeansSpringExtension
 import mypackage.cordapp.contract.YoContract
+import mypackage.server.components.YoService
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 
@@ -48,9 +52,31 @@ class YoStateServiceIntegrationTest {
     @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     lateinit var networkService: CordaNetworkService
+    // autowire all created node services directly, mapped by name
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    lateinit var services: Map<String, CordaNodeService>
 
+    // autowire a node service for a specific node
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    @Qualifier("partyANodeService")
+    lateinit var service: CordaNodeService
+
+    // autowire a unique custom service
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    @Qualifier("partyBNodeService")
+    lateinit var customCervice: YoService
     @Autowired
     lateinit var restTemplate: TestRestTemplate
+
+    @Nested
+    inner class `Can access Actuator and Swagger` : InfoIntegrationTests(restTemplate, networkService)
+
+    @Nested
+    inner class `Can access Node APIs` : NodeIntegrationTests(restTemplate, networkService, services, customCervice, service)
+
 
     @Test
     fun `Can use state service to query and track states`() {
