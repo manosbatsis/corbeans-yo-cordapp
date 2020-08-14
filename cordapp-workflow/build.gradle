@@ -1,5 +1,6 @@
 apply plugin: 'net.corda.plugins.cordapp'
 apply plugin: 'net.corda.plugins.quasar-utils'
+apply plugin: 'kotlin-kapt'
 
 cordapp {
     targetPlatformVersion corda_platform_version
@@ -12,48 +13,42 @@ cordapp {
     }
 }
 
+// Define an extra sources variable to pick up spring test properties
+// for automatically setting up mocknetwork nodes
+def applicationProperties = rootProject.file("bootapp-webserver/src/main/resources")
+def log4jConfig = rootProject.file("config/test")
 sourceSets {
-    main {
-        resources {
-            srcDir rootProject.file("config/dev")
-        }
-    }
     test {
         resources {
-            srcDir rootProject.file("config/test")
+            srcDirs += [applicationProperties, log4jConfig]
         }
     }
-    integrationTest {
-        kotlin {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/integrationTest/kotlin')
-        }
-    }
-}
-
-configurations {
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
 }
 
 dependencies {
     // CorDapp dependencies.
     cordapp project(":cordapp-contract")
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
     // Use Partiture for corda flows etc.
     cordaCompile "com.github.manosbatsis.partiture:partiture:$partiture_version"
-    // Vaultaire core dependency
+
+    // Vaultaire core dependency and  annotation processing
     cordaCompile "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
-    // Vaultaire annotation processing
+    cordaCompile "com.github.manosbatsis.vaultaire:vaultaire-plugin-accounts:$vaultaire_version"
     kapt "com.github.manosbatsis.vaultaire:vaultaire-processor:$vaultaire_version"
+
+    // Corda Accounts
+    cordaCompile "$accounts_release_group:accounts-workflows:$accounts_release_version"
+    cordaCompile "$confidential_id_release_group:ci-workflows:$confidential_id_release_version"
+
     // Corda dependencies.
     cordaCompile "$corda_core_release_group:corda-core:$corda_core_release_version"
     cordaRuntime "$corda_release_group:corda:$corda_release_version"
 
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    testCompile "junit:junit:$junit_version"
+    testCompile "com.github.manosbatsis.partiture:partiture-test:$partiture_version"
+    testCompile "com.github.manosbatsis.corbeans:corbeans-corda-common-test:$corbeans_version"
 
-
+    testCompile "$corda_release_group:corda-core-test-utils:$corda_release_version"
     testCompile "$corda_release_group:corda-node-driver:$corda_release_version"
 }

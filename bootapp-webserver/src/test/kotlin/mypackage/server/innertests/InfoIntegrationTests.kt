@@ -19,7 +19,8 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.server
+package mypackage.server.innertests
+
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
@@ -29,7 +30,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpStatus
 
-
+/** Test swagger and actuator endpoints */
 open class InfoIntegrationTests(
         val restTemplate: TestRestTemplate,
         val networkService: CordaNetworkService
@@ -39,7 +40,6 @@ open class InfoIntegrationTests(
         private val logger = LoggerFactory.getLogger(InfoIntegrationTests::class.java)
 
     }
-
 
     @Test
     fun `Can access swagger UI`() {
@@ -72,8 +72,6 @@ open class InfoIntegrationTests(
     @Test
     fun `Can access Corda custom Actuator endpoint`() {
         logger.info("testCordaEndpoint, called")
-        val serviceKeys = this.networkService.nodeServices.keys
-        logger.info("testCordaEndpoint, serviceKeys: {}", serviceKeys)
         val entity = this.restTemplate
                 .getForEntity("/actuator/corda", Map::class.java)
         // Ensure a 200 OK

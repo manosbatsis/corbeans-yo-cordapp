@@ -22,53 +22,39 @@
 package mypackage.cordapp.workflow
 
 
-import com.github.manosbatsis.partiture.flow.PartitureFlow
-import com.github.manosbatsis.partiture.flow.PartitureResponderFlow
-import com.github.manosbatsis.partiture.flow.call.CallContext
-import com.github.manosbatsis.partiture.flow.call.CallContextEntry
-import com.github.manosbatsis.partiture.flow.delegate.initiating.PartitureFlowDelegateBase
-import com.github.manosbatsis.partiture.flow.io.input.InputConverter
-import com.github.manosbatsis.partiture.flow.io.output.SingleFinalizedTxOutputConverter
-import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
-import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
-import mypackage.cordapp.contract.YO_CONTRACT_ID
+import com.github.manosbatsis.partiture.flow.util.PartitureAccountsAwareFlow
+import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
 import mypackage.cordapp.contract.YoContract
-import net.corda.core.flows.FlowSession
-import net.corda.core.flows.InitiatedBy
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
-import net.corda.core.identity.Party
-import net.corda.core.transactions.SignedTransaction
 
-/** Create a Yo! transaction/state for each input recipient/party */
+/** Create a Yo! state to send a Yo! message */
 @InitiatingFlow
 @StartableByRPC
-class YoFlow(
-        input: Party
-) : PartitureFlow<Party, SignedTransaction>(
-        input = input, // Input can be anything
-        inputConverter = YoInputConverter(),// Our custom IN converter
-        outputConverter = SingleFinalizedTxOutputConverter()) // OUT build-in converter
+@VaultaireGenerateResponder(YoFlowResponder::class)
+class CreateYoFlow(
+        input: YoStateLiteDto
+): PartitureAccountsAwareFlow<YoStateLiteDto, YoStateLiteDto>(
+        // We use generated DTOs as input/output
+        input = input,
+        // Our custom input converter
+        inputConverter = YoInputConverter(YoContract.Commands.Send()),
+        // Our custom output converter
+        outputConverter = YoOutputConverter())
 
-class YoInputConverter : PartitureFlowDelegateBase(), InputConverter<Party> {
-    override fun convert(input: Party): CallContext {
-        // Prepare a TX builder
-        val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
-                .addOutputState(YoContract.YoState(clientFlow.ourIdentity, input), YO_CONTRACT_ID)
-                .addCommand(YoContract.Send())
-        // Return a TX context with builder and participants
-        return CallContext(CallContextEntry(txBuilder))
-    }
-}
 
-/**
- * A basic responder for countersigning and listening for finality
- */
-@InitiatedBy(YoFlow::class)
-class YoFlowResponder(
-        otherPartySession: FlowSession
-) : PartitureResponderFlow(
-        otherPartySession = otherPartySession,
-        responderTxStrategy = SimpleTypeCheckingResponderTxStrategy(
-                YoContract.YoState::class.java)
-)
+/** Update a Yo! state to reply to the Yo! message */
+@InitiatingFlow
+@StartableByRPC
+@VaultaireGenerateResponder(YoFlowResponder::class)
+class UpdateYoFlow(
+        input: YoStateLiteDto
+): PartitureAccountsAwareFlow<YoStateLiteDto, YoStateLiteDto>(
+        // We use generated DTOs as input/output
+        input = input,
+        // Our custom input converter
+        inputConverter = YoInputConverter(YoContract.Commands.Reply()),
+        // Our custom output converter
+        outputConverter = YoOutputConverter())
+
+

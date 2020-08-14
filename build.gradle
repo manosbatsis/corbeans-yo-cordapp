@@ -1,17 +1,28 @@
 buildscript {
     Properties constants = new Properties()
     file("$projectDir/./constants.properties").withInputStream { constants.load(it) }
-
+    File secretPropsFile = file('./local.properties')
+    if (secretPropsFile.exists()) {
+        Properties p = new Properties()
+        p.load(new FileInputStream(secretPropsFile))
+        p.each { name, value ->
+            ext[name] = value
+        }
+    }
     ext {
 
-        //corda_gradle_plugins_version = '4.0.45'
+        kotlin_version = constants.getProperty("kotlinVersion")
 
         corda_release_group = constants.getProperty("cordaReleaseGroup")
         corda_core_release_group =  constants.getProperty("cordaCoreReleaseGroup")
         corda_release_version = constants.getProperty("cordaVersion")
         corda_core_release_version = constants.getProperty("cordaCoreVersion")
         corda_gradle_plugins_version = constants.getProperty("gradlePluginsVersion")
-        kotlin_version = constants.getProperty("kotlinVersion")
+
+        confidential_id_release_group = "com.r3.corda.lib.ci"
+        confidential_id_release_version = "1.0"
+        accounts_release_group = 'com.r3.corda.lib.accounts'
+        accounts_release_version = '1.0'
 
         junit_version = constants.getProperty("junitVersion")
         quasar_version = constants.getProperty("quasarVersion")
@@ -29,17 +40,19 @@ buildscript {
         hibernate_version = '5.4.3.Final'
         artemis_version = "2.6.2"
         netty_version = constants.getProperty("nettyVersion")
-
-
         dokka_version = '0.9.17'
-        jupiter_api = '5.3.2'
-        corbeans_version = '0.40'
-        scrudbeans_version = '0.15'
-        vaultaire_version = '0.20'
-        partiture_version = '0.8'
+        jupiter_api = '5.5.0-RC1'
+
+        kotlinutils_version = '0.20'
+        corbeans_version = '0.45'
+        scrudbeans_version = '0.26'
+        vaultaire_version = '0.28'
+        partiture_version = '0.13'
         springdoc_version = '1.2.30'
+
         quasar_group = 'co.paralleluniverse'
         quasar_version = constants.getProperty("quasarVersion")
+
         quasar_exclusions = [
                 'co.paralleluniverse**',
                 'groovy**',
@@ -179,7 +192,6 @@ subprojects {
         reproducibleFileOrder = true
     }
 
-
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             languageVersion = "1.2"
@@ -189,45 +201,61 @@ subprojects {
             javaParameters = true   // Useful for reflection.
         }
     }
+
     test {
         // Use jupiter
         useJUnitPlatform {
+            maxHeapSize = "3g"
             includeEngines 'junit-jupiter'
-            testLogging {
-                events "passed", "skipped", "failed", "standardOut", "standardError"
+            if (project.hasProperty('enableTestLogging') && project.enableTestLogging) {
+                testLogging.showStandardStreams = true
+                testLogging.exceptionFormat = 'full'
             }
+            else {
+                testLogging.showStandardStreams = false
+            }
+            //testLogging {
+            //    events "passed", "skipped", "failed"
+            //}
             include '**/*Test.class'
             exclude '**/*IntegrationTest.class'
         }
     }
-    // Run integration tests using junit5
-    configurations {
-        // Adding a configuration that extends existing configuration:
-        //(testCompile was added by the java plugin)
-        integrationTestCompile.extendsFrom(testCompile)
-    }
+
     task integrationTest(type: Test) {
         maxParallelForks = 1
-        jvmArgs "-XX:MaxPermSize=61470m"
+        maxHeapSize = "3g"
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
-            testLogging {
-                events "passed", "skipped", "failed", "standardOut", "standardError"
+            if (project.hasProperty('enableTestLogging') && project.enableTestLogging) {
+                testLogging.showStandardStreams = true
+                testLogging.exceptionFormat = 'full'
             }
+            else {
+                testLogging.showStandardStreams = false
+            }
+            //testLogging {
+            //    events "passed", "skipped", "failed"
+            //}
             include '**/*IntegrationTest.class'
             exclude '**/SwaggerExporterIntegrationTest.class'
-
         }
     }
 
     dependencies{
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
+        // Kotlin
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
 
-        testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_api"
-        testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiter_api")
-
+        // Kotlin Test
+        testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+        // JUnit Jupiter
+        testImplementation("org.junit.jupiter:junit-jupiter:$jupiter_api")
+        // JUnit Vintage
+        //testCompileOnly('junit:junit:4.12')
+        testRuntimeOnly("org.junit.vintage:junit-vintage-engine:$jupiter_api") {
+            because 'allows JUnit 3 and JUnit 4 tests to run'
+        }
     }
 }
 

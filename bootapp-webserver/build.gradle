@@ -23,17 +23,24 @@ dependencies {
 
 	// CorDapp dependencies.
 	compile project(":cordapp-workflow")
+	// Vaultaire
+	compile "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
+	compile "com.github.manosbatsis.vaultaire:vaultaire-plugin-accounts:$vaultaire_version"
+	// Corda Accounts
+	compile "$accounts_release_group:accounts-workflows:$accounts_release_version"
+	compile "$accounts_release_group:accounts-workflows:$accounts_release_version"
+	// Corbeans
 	compile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter:$corbeans_version")
 	compile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-bnms-starter:$corbeans_version")
 	// Add support for RESTful errors
 	compile ("com.github.manosbatsis.scrudbeans:scrudbeans-error:$scrudbeans_version")
+	// Spring Bot, OpenAPI/SpringDoc
 	compile("org.springframework.boot:spring-boot-starter-actuator:$spring_boot_version"){
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
 	compile("org.springframework.boot:spring-boot-starter-web:$spring_boot_version") {
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
-	// OpenAPI/SpringDoc
 	compile "org.springdoc:springdoc-openapi-ui:${springdoc_version}"
 	compile ("org.springdoc:springdoc-openapi-data-rest:${springdoc_version}"){
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"

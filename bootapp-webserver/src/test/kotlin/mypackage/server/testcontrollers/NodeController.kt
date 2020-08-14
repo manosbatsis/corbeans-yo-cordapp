@@ -19,11 +19,11 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.server.components
+package mypackage.server.testcontrollers
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.web.CordaPathFragmentNodeController
 import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-class NodeController: CordaPathFragmentNodeController()
+class NodeController : CordaPathFragmentNodeController()

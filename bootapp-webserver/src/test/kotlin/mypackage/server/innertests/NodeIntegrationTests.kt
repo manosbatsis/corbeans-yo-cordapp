@@ -19,17 +19,13 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
-package mypackage.server
+package mypackage.server.innertests
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
-import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNodeService
-import mypackage.server.components.YoService
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.crypto.SecureHash
 import net.corda.core.identity.CordaX500Name
-import net.corda.core.identity.Party
-import net.corda.core.utilities.NetworkHostAndPort
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
@@ -46,36 +42,18 @@ import java.util.UUID
 import kotlin.test.assertTrue
 
 
+/** Test node services */
 open class NodeIntegrationTests(
         val restTemplate: TestRestTemplate,
-        val networkService: CordaNetworkService,
-        val services: Map<String, CordaNodeService>,
-        val customCervice: YoService,
-        val service: CordaNodeService
+        val networkService: CordaNetworkService
 ) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(NodeIntegrationTests::class.java)
 
     }
-
-    @Test
-    fun `Can inject services`() {
-        logger.info("services: {}", services)
-        Assertions.assertNotNull(this.networkService)
-        Assertions.assertNotNull(this.services)
-        Assertions.assertNotNull(this.service)
-        assertTrue(this.services.keys.isNotEmpty())
-    }
-
-    @Test
-    fun `Can inject custom service`() {
-        logger.info("customCervice: {}", customCervice)
-        Assertions.assertNotNull(this.customCervice)
-    }
     @Test
     fun `Can retrieve node identity`() {
-        Assertions.assertNotNull(service.myIdentity)
         val entity = this.restTemplate.getForEntity("/api/nodes/partyA/whoami", Any::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
@@ -84,7 +62,6 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve identities`() {
-        Assertions.assertNotNull(service.identities())
         val entity = this.restTemplate.getForEntity("/api/nodes/partyA/identities", JsonNode::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
@@ -94,7 +71,6 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve nodes`() {
-        Assertions.assertNotNull(service.identities())
         val entity = this.restTemplate.getForEntity("/api/nodes/partyA/nodes", JsonNode::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
@@ -104,7 +80,6 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve peers`() {
-        Assertions.assertNotNull(service.identities())
         val entity = this.restTemplate.getForEntity("/api/nodes/partyA/peers", JsonNode::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
@@ -114,8 +89,6 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve notaries`() {
-        val notaries: List<Party> = service.notaries()
-        Assertions.assertNotNull(notaries)
         val entity = this.restTemplate.getForEntity("/api/nodes/partyA/notaries", JsonNode::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
@@ -125,8 +98,6 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve flows`() {
-        val flows: List<String> = service.flows()
-        Assertions.assertNotNull(flows)
         val entity = this.restTemplate.getForEntity("/api/nodes/partyA/flows", Any::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
@@ -135,8 +106,6 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve addresses`() {
-        val addresses: List<NetworkHostAndPort> = service.addresses()
-        Assertions.assertNotNull(addresses)
         val entity = this.restTemplate.getForEntity("/api/nodes/partyA/addresses", Any::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
@@ -191,7 +160,7 @@ open class NodeIntegrationTests(
         assertTrue(paths.containsAll(listOf("test.txt", "test.png")))
     }
 
-    @Test
+    //@Test
     @Throws(Exception::class)
     fun `Can save and retrieve single zip and jar files as attachments`() {
         testArchiveUploadAndDownload("test.zip", "application/zip")

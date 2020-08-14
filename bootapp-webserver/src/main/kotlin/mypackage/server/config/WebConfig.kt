@@ -21,22 +21,24 @@
  */
 package mypackage.server.config
 
-import com.github.manosbatsis.scrudbeans.error.RestExceptionHandler
-import org.springframework.context.annotation.Bean
-import org.springframework.web.servlet.HandlerExceptionResolver
+import org.springframework.context.annotation.Configuration
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
-/**
- * Automatically handle errors by creating a REST exception response,
- * courtesy of `scrudbeans-error`, see:
- * https://manosbatsis.github.io/scrudbeans/docs/restfulservices#error-responses
- */
-class ErrorConfig {
+
+@Configuration
+class WebConfig : WebMvcConfigurer {
 
     /**
-     * Register our custom `HandlerExceptionResolver`
+     * Configure cross origin requests processing.
+     * @since 4.2
      */
-    @Bean
-    fun restExceptionHandler(): HandlerExceptionResolver {
-        return RestExceptionHandler()
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true)
     }
+
 }
