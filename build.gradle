@@ -44,9 +44,9 @@ buildscript {
         jupiter_api = '5.5.0-RC1'
 
         kotlinutils_version = '0.20'
-        corbeans_version = '0.45'
-        scrudbeans_version = '0.26'
-        vaultaire_version = '0.28'
+        corbeans_version = '0.48'
+        scrudbeans_version = '0.27'
+        vaultaire_version = '0.30'
         partiture_version = '0.13'
         springdoc_version = '1.2.30'
 
