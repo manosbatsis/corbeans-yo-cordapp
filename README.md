@@ -1,5 +1,5 @@
 
-# Corbeans Yo! Cordapp [![Build Status](https://travis-ci.org/manosbatsis/corbeans-yo-cordapp.svg?branch=master)](https://travis-ci.org/manosbatsis/corbeans-yo-cordapp)
+# Corbeans Yo! Cordapp [![Build Status](https://travis-ci.com/manosbatsis/corbeans-yo-cordapp.svg?branch=master)](https://travis-ci.com/manosbatsis/corbeans-yo-cordapp)
 
 A [Corbeans](https://manosbatsis.github.io/corbeans/) project sample and template 
 originally based on Joel Dudley's [yo-cordapp](https://github.com/corda/samples/tree/release-V3/yo-cordapp) by R3.
