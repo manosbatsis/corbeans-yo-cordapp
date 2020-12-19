@@ -51,4 +51,8 @@ dependencies {
 
     testCompile "$corda_release_group:corda-core-test-utils:$corda_release_version"
     testCompile "$corda_release_group:corda-node-driver:$corda_release_version"
+
+    // Add Corda Testacles Mock Network
+    testImplementation("com.github.manosbatsis.corda.testacles:corda-testacles-mocknetwork:$testacles_version")
+
 }

@@ -23,29 +23,15 @@ package mypackage.server
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
 import com.github.manosbatsis.corbeans.test.integration.CorbeansSpringExtension
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
-import com.github.manosbatsis.vaultaire.registry.Registry
-import com.r3.corda.lib.accounts.contracts.states.AccountInfo
-import mypackage.cordapp.workflow.YoStateLiteDto
 import mypackage.server.innertests.InfoIntegrationTests
 import mypackage.server.innertests.NodeIntegrationTests
-import mypackage.server.yo.ResultsPage
-import net.corda.core.contracts.UniqueIdentifier
+import mypackage.server.innertests.StateIntegrationTests
 import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.RequestEntity
-import java.net.URI
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 
 /**
@@ -64,7 +50,6 @@ import kotlin.test.assertTrue
 @ExtendWith(CorbeansSpringExtension::class)
 class MainIntegrationTest {
 
-
     companion object {
         private val logger = LoggerFactory.getLogger(MainIntegrationTest::class.java)
     }
@@ -77,94 +62,14 @@ class MainIntegrationTest {
     @Autowired
     lateinit var restTemplate: TestRestTemplate
 
-
     @Nested
     inner class `Can access Actuator and Swagger` : InfoIntegrationTests(restTemplate, networkService)
 
     @Nested
     inner class `Can access Node APIs` : NodeIntegrationTests(restTemplate, networkService)
 
+    @Nested
+    inner class `Can query and track states` : StateIntegrationTests(restTemplate, networkService)
 
-    @Test
-    fun `Can use state service to query and track states`() {
-        networkService.getService(AccountInfoService::class.java, "partyA")
-        val services = Registry.getServices()
-        logger.info("Services (${services.size}): $services")
-        services.forEach { (state, service) ->
-            logger.info("Service state: ${state.javaClass.canonicalName}, class: ${service.canonicalName}")
-        }
-
-        logger.info("Network service class: ${networkService.javaClass.canonicalName}")
-        // Init services
-        val aNodeService = networkService.getNodeService("partyA")
-        logger.info("Node service class: ${aNodeService.javaClass.canonicalName}")
-        //val aStateService: YoStateService = aNodeService.createStateService(YoState::class.java)
-        val aAccountInfoService: AccountInfoService = aNodeService.createStateService(AccountInfo::class.java)
-
-        val bNodeService = networkService.getNodeService("partyB")
-        //val bStateService: YoStateService = bNodeService.createStateService(YoState::class.java)
-        val bAccountInfoService: AccountInfoService = bNodeService.createStateService(AccountInfo::class.java)
-
-        // Create accounts A and B
-        val aAccountInfo = aAccountInfoService.createAccount("accountA").state.data
-        val bAccountInfo = bAccountInfoService.createAccount("accountB").state.data
-
-        // Send Yo from Account A to Account B
-        val aCoountInfoDto = AccountInfoLiteDto.mapToDto(aAccountInfo, aAccountInfoService)
-        val bCoountInfoDto = AccountInfoLiteDto.mapToDto(bAccountInfo, bAccountInfoService)
-        val message = "A sent Yo! to B"
-        val dto = YoStateLiteDto(
-                origin = aCoountInfoDto,
-                target = bCoountInfoDto,
-                message = message)
-        logger.info("Sending DTO: ${dto}")
-        val sentYoDto = this.restTemplate.postForObject(
-                "/partyA/api/yo", dto, YoStateLiteDto::class.java)
-        logger.info("Sent DTO: ${sentYoDto}")
-        assertEquals(aCoountInfoDto, sentYoDto.origin)
-        assertEquals(bCoountInfoDto, sentYoDto.target)
-        assertEquals(message, sentYoDto.message)
-/*
-        // Give some time to the async tracking process
-        Thread.sleep(3000);
-
-        // Reply from Account B tp Account A
-        val replyMessage = "B replied Yo! to A"
-        this.restTemplate.exchange(
-                "/partyB/api/yo${sentYoDto.linearId!!.id}", PUT,
-                HttpEntity(sentYoDto.copy(replyMessage = replyMessage)),
-                YoStateLiteDto::class.java)
-
-        // Query node vaults
-        validateQueryResults("partyA", sentYoDto.linearId!!, replyMessage)
-        validateQueryResults("partyB", sentYoDto.linearId!!, replyMessage)
-*/
-    }
-
-    /** Ensure proper Vault storage */
-    fun validateQueryResults(
-            nodeName: String,
-            linearId: UniqueIdentifier,
-            replyMessage: String) {
-
-        // Ensure yo state can be retrieved from vault,
-        // 1st by id.
-        val yoDto = this.restTemplate.getForObject(
-                "/partyA/api/yo/${linearId.id}",
-                YoStateLiteDto::class.java)
-        assertNotNull(yoDto)
-
-        // 2nd by query
-        val yoDtoPage: ResultsPage<YoStateLiteDto>? = this.restTemplate.exchange(
-                RequestEntity<Any>(GET, URI.create("/partyA/api/yo?replyMessage=${replyMessage}")),
-                parameterizedTypeReference<ResultsPage<YoStateLiteDto>>()
-        ).body
-
-        assertTrue(yoDtoPage!!.totalResults.toInt() == 1)
-        assertEquals(linearId, yoDtoPage!!.content.single().linearId)
-
-    }
 
 }
-
-inline fun <reified T> parameterizedTypeReference() = object : ParameterizedTypeReference<T>() {}

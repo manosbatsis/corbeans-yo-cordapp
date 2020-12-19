@@ -27,8 +27,11 @@ dependencies {
 	compile "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
 	compile "com.github.manosbatsis.vaultaire:vaultaire-plugin-accounts:$vaultaire_version"
 	// Corda Accounts
+	compile "$accounts_release_group:accounts-contracts:$accounts_release_version"
 	compile "$accounts_release_group:accounts-workflows:$accounts_release_version"
-	compile "$accounts_release_group:accounts-workflows:$accounts_release_version"
+	compile "$confidential_id_release_group:ci-workflows:$confidential_id_release_version"
+
+
 	// Corbeans
 	compile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter:$corbeans_version")
 	compile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-bnms-starter:$corbeans_version")
@@ -52,4 +55,9 @@ dependencies {
 	testCompile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_version"){
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
+	testCompile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_version"){
+		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+	}
+	testImplementation("com.github.manosbatsis.corda.testacles:corda-testacles-nodedriver:$testacles_version")
+
 }

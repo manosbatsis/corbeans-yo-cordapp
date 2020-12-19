@@ -21,55 +21,59 @@
  */
 package mypackage.cordapp.workflow
 
-import com.github.manosbatsis.corbeans.corda.common.test.CorbeansMockNetworkFlowTest
-import com.github.manosbatsis.corbeans.corda.common.test.CorbeansMockNodeParametersConfig
+import com.github.manosbatsis.corda.testacles.mocknetwork.NodeHandles
+import com.github.manosbatsis.corda.testacles.mocknetwork.config.MockNetworkConfig
+import com.github.manosbatsis.corda.testacles.mocknetwork.config.OrgNames
+import com.github.manosbatsis.corda.testacles.mocknetwork.jupiter.MockNetworkExtension
+import com.github.manosbatsis.corda.testacles.mocknetwork.jupiter.MockNetworkExtensionConfig
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.utilities.getOrThrow
 import net.corda.testing.node.StartedMockNode
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 
-@Suppress("DEPRECATION")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
-class FlowsTest : CorbeansMockNetworkFlowTest(
-        CorbeansMockNodeParametersConfig(requireApplicationProperties = true)
-) {
+/** Sample test using [MockNetworkExtension] */
+@ExtendWith(MockNetworkExtension::class)
+class FlowsTest{
 
     companion object {
         private val logger = LoggerFactory.getLogger(FlowsTest::class.java)
-    }
-
-    lateinit var a: StartedMockNode
-    lateinit var b: StartedMockNode
-    lateinit var aYoStateService: YoStateService
-    lateinit var bYoStateService: YoStateService
-    lateinit var aAccountInfoService: AccountInfoService
-    lateinit var bAccountInfoService: AccountInfoService
-
-    init {
-        val config = CorbeansMockNodeParametersConfig()
-        logger.info("FlowsTest, config: ${config}")
-        println("FlowsTest, config: ${config}")
-    }
-
-    override fun postSetup() {
-        a = nodeMap["partyA"] ?: error("Cannot find node partyA, nodes(${nodeMap.keys.size}): ${nodeMap.keys.joinToString(",")}")
-        aYoStateService = YoStateService(a.services)
-        aAccountInfoService = AccountInfoService(a.services)
-
-        b = nodeMap["partyB"] ?: error("Cannot find node partyB, nodes(${nodeMap.keys.size}): ${nodeMap.keys.joinToString(",")}")
-        bYoStateService = YoStateService(b.services)
-        bAccountInfoService = AccountInfoService(b.services)
+        // Marks the field as a config for the extension
+        @MockNetworkExtensionConfig
+        @JvmStatic
+        val mockNetworkConfig = MockNetworkConfig (
+            // The nodes to build as an OrgNames instance
+            names = OrgNames(listOf("PartyA", "PartyB")),
+            // The current cordapp module package
+            cordappProjectPackage = "mypackage.cordapp.contract",
+            // Other cordapps
+            cordappPackages = listOf(
+                "mypackage.cordapp.workflow",
+                "com.github.manosbatsis.vaultaire.dto",
+                "com.github.manosbatsis.vaultaire.plugin.accounts",
+                "com.r3.corda.lib.accounts.contracts",
+                "com.r3.corda.lib.accounts.workflows",
+                "com.r3.corda.lib.ci.workflows")
+        )
     }
 
     @Test
-    fun flowWorksCorrectly() {
+    fun flowWorksCorrectly(nodeHandles: NodeHandles) {
+
+        val a: StartedMockNode = nodeHandles.getNode("partya")
+        val b: StartedMockNode = nodeHandles.getNode("partyb")
+
+        val aYoStateService = YoStateService(a.services)
+        val bYoStateService = YoStateService(b.services)
+
+        val aAccountInfoService = AccountInfoService(a.services)
+        val bAccountInfoService = AccountInfoService(b.services)
 
         // Create accounts A and B
         val aAccountInfo = aAccountInfoService.createAccount("accountA").state.data
@@ -81,14 +85,14 @@ class FlowsTest : CorbeansMockNetworkFlowTest(
                 AccountInfoLiteDto.mapToDto(bAccountInfo, bAccountInfoService),
                 "A sent Yo! to B")))
                 .getOrThrow()
-        network.waitQuiescent()
+        nodeHandles.network.waitQuiescent()
 
         // Reply from Account B tp Account A
         val replyMessage = "B replied Yo! to A"
         b.startFlow(UpdateYoFlow(sentYoDto.copy(
                 replyMessage = replyMessage)))
                 .getOrThrow()
-        network.waitQuiescent()
+        nodeHandles.network.waitQuiescent()
 
         // Query node vaults
         validateQueryResults(aYoStateService, sentYoDto.linearId!!, replyMessage)

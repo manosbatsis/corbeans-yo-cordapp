@@ -16,7 +16,7 @@ buildscript {
         corda_release_group = constants.getProperty("cordaReleaseGroup")
         corda_core_release_group =  constants.getProperty("cordaCoreReleaseGroup")
         corda_release_version = constants.getProperty("cordaVersion")
-        corda_core_release_version = constants.getProperty("cordaCoreVersion")
+        corda_core_release_version = constants.getProperty("cordaVersion")
         corda_gradle_plugins_version = constants.getProperty("gradlePluginsVersion")
 
         confidential_id_release_group = "com.r3.corda.lib.ci"
@@ -30,29 +30,29 @@ buildscript {
         slf4j_version = constants.getProperty("slf4jVersion")
         corda_platform_version = constants.getProperty("platformVersion").toInteger()
         //springboot
-        spring_version = '5.2.2.RELEASE'
-        spring_boot_version = '2.2.2.RELEASE'
-        spring_boot_gradle_plugin_version = '2.2.2.RELEASE'
+        spring_version = '5.2.10.RELEASE'
+        spring_boot_version = '2.3.5.RELEASE'
+        spring_boot_gradle_plugin_version = '2.3.5.RELEASE'
         // Misc
         corda_solutions_version = '2.0'
         kotlinx_coroutines_version = '0.30.2'
-        jackson_version = "2.9.7"
+        jackson_version = "2.10.5"
         hibernate_version = '5.4.3.Final'
         artemis_version = "2.6.2"
         netty_version = constants.getProperty("nettyVersion")
         dokka_version = '0.9.17'
-        jupiter_api = '5.5.0-RC1'
+        jupiter_api = '5.6.2'
 
         kotlinutils_version = '0.20'
-        corbeans_version = '0.48'
-        scrudbeans_version = '0.27'
-        vaultaire_version = '0.30'
-        partiture_version = '0.13'
+        corbeans_version = '0.51'
+        scrudbeans_version = '0.28'
+        testacles_version = '0.14'
+        vaultaire_version = '0.33'
+        partiture_version = '0.15'
         springdoc_version = '1.2.30'
 
         quasar_group = 'co.paralleluniverse'
         quasar_version = constants.getProperty("quasarVersion")
-
         quasar_exclusions = [
                 'co.paralleluniverse**',
                 'groovy**',
