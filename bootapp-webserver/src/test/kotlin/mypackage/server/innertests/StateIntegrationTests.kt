@@ -34,12 +34,13 @@ import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.RequestEntity
 import java.net.URI
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 /** Test swagger and actuator endpoints */
 open class StateIntegrationTests(
@@ -55,7 +56,7 @@ open class StateIntegrationTests(
 
     @Test
     fun `Can use state service to query and track states`() {
-        networkService.getService(AccountInfoService::class.java, "partyA")
+        networkService.getService(AccountInfoService::class.java, "partya")
         val services = Registry.getServices()
         logger.info("Services (${services.size}): $services")
         services.forEach { (state, service) ->
@@ -64,12 +65,12 @@ open class StateIntegrationTests(
 
         logger.info("Network service class: ${networkService.javaClass.canonicalName}")
         // Init services
-        val aNodeService = networkService.getNodeService("partyA")
+        val aNodeService = networkService.getNodeService("partya")
         logger.info("Node service class: ${aNodeService.javaClass.canonicalName}")
         //val aStateService: YoStateService = aNodeService.createStateService(YoState::class.java)
         val aAccountInfoService: AccountInfoService = aNodeService.createStateService(AccountInfo::class.java)
 
-        val bNodeService = networkService.getNodeService("partyB")
+        val bNodeService = networkService.getNodeService("partyb")
         //val bStateService: YoStateService = bNodeService.createStateService(YoState::class.java)
         val bAccountInfoService: AccountInfoService = bNodeService.createStateService(AccountInfo::class.java)
 
@@ -87,26 +88,26 @@ open class StateIntegrationTests(
             message = message)
         logger.info("Sending DTO: ${dto}")
         val sentYoDto = this.restTemplate.postForObject(
-            "/partyA/api/yo", dto, YoStateLiteDto::class.java)
+            "/partya/api/yo", dto, YoStateLiteDto::class.java)
         logger.info("Sent DTO: ${sentYoDto}")
         assertEquals(aCoountInfoDto, sentYoDto.origin)
         assertEquals(bCoountInfoDto, sentYoDto.target)
         assertEquals(message, sentYoDto.message)
-/*
+
         // Give some time to the async tracking process
         Thread.sleep(3000);
 
         // Reply from Account B tp Account A
         val replyMessage = "B replied Yo! to A"
         this.restTemplate.exchange(
-                "/partyB/api/yo${sentYoDto.linearId!!.id}", PUT,
+                "/partyb/api/yo${sentYoDto.linearId!!.id}", HttpMethod.PUT,
                 HttpEntity(sentYoDto.copy(replyMessage = replyMessage)),
                 YoStateLiteDto::class.java)
 
         // Query node vaults
-        validateQueryResults("partyA", sentYoDto.linearId!!, replyMessage)
-        validateQueryResults("partyB", sentYoDto.linearId!!, replyMessage)
-*/
+        validateQueryResults("partya", sentYoDto.linearId!!, replyMessage)
+        validateQueryResults("partyb", sentYoDto.linearId!!, replyMessage)
+
     }
 
     /** Ensure proper Vault storage */
@@ -118,17 +119,16 @@ open class StateIntegrationTests(
         // Ensure yo state can be retrieved from vault,
         // 1st by id.
         val yoDto = this.restTemplate.getForObject(
-            "/partyA/api/yo/${linearId.id}",
+            "/$nodeName/api/yo/${linearId.id}",
             YoStateLiteDto::class.java)
         assertNotNull(yoDto)
 
         // 2nd by query
         val yoDtoPage: ResultsPage<YoStateLiteDto>? = this.restTemplate.exchange(
-            RequestEntity<Any>(GET, URI.create("/partyA/api/yo?replyMessage=${replyMessage}")),
+            RequestEntity<Any>(GET, URI.create("/$nodeName/api/yo")),
             parameterizedTypeReference<ResultsPage<YoStateLiteDto>>()
         ).body
 
-        assertTrue(yoDtoPage!!.totalResults.toInt() == 1)
         assertEquals(linearId, yoDtoPage!!.content.single().linearId)
 
     }

@@ -54,7 +54,7 @@ open class NodeIntegrationTests(
     }
     @Test
     fun `Can retrieve node identity`() {
-        val entity = this.restTemplate.getForEntity("/api/nodes/partyA/whoami", Any::class.java)
+        val entity = this.restTemplate.getForEntity("/api/nodes/partya/whoami", Any::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.subtype, entity.headers.contentType?.subtype)
@@ -62,7 +62,7 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve identities`() {
-        val entity = this.restTemplate.getForEntity("/api/nodes/partyA/identities", JsonNode::class.java)
+        val entity = this.restTemplate.getForEntity("/api/nodes/partya/identities", JsonNode::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.subtype, entity.headers.contentType?.subtype)
@@ -71,7 +71,7 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve nodes`() {
-        val entity = this.restTemplate.getForEntity("/api/nodes/partyA/nodes", JsonNode::class.java)
+        val entity = this.restTemplate.getForEntity("/api/nodes/partya/nodes", JsonNode::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.subtype, entity.headers.contentType?.subtype)
@@ -80,7 +80,7 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve peers`() {
-        val entity = this.restTemplate.getForEntity("/api/nodes/partyA/peers", JsonNode::class.java)
+        val entity = this.restTemplate.getForEntity("/api/nodes/partya/peers", JsonNode::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.subtype, entity.headers.contentType?.subtype)
@@ -89,7 +89,7 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve notaries`() {
-        val entity = this.restTemplate.getForEntity("/api/nodes/partyA/notaries", JsonNode::class.java)
+        val entity = this.restTemplate.getForEntity("/api/nodes/partya/notaries", JsonNode::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.subtype, entity.headers.contentType?.subtype)
@@ -98,7 +98,7 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve flows`() {
-        val entity = this.restTemplate.getForEntity("/api/nodes/partyA/flows", Any::class.java)
+        val entity = this.restTemplate.getForEntity("/api/nodes/partya/flows", Any::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.subtype, entity.headers.contentType?.subtype)
@@ -106,7 +106,7 @@ open class NodeIntegrationTests(
 
     @Test
     fun `Can retrieve addresses`() {
-        val entity = this.restTemplate.getForEntity("/api/nodes/partyA/addresses", Any::class.java)
+        val entity = this.restTemplate.getForEntity("/api/nodes/partya/addresses", Any::class.java)
         Assertions.assertEquals(OK, entity.statusCode)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.type, entity.headers.contentType?.type)
         Assertions.assertEquals(MediaType.APPLICATION_JSON.subtype, entity.headers.contentType?.subtype)
@@ -146,15 +146,15 @@ open class NodeIntegrationTests(
         Assertions.assertNotNull(hash)
         // TODO assertTrue(attachmentReceipt.files.containsAll(listOf("test.txt", "test.png")))
         // Test archive download
-        var attachment = this.restTemplate.getForEntity("/api/nodes/partyA/attachments/${hash}", ByteArray::class.java)
+        var attachment = this.restTemplate.getForEntity("/api/nodes/partya/attachments/${hash}", ByteArray::class.java)
         Assertions.assertEquals(OK, attachment.statusCode)
         // Test archive file entry download
-        attachment = this.restTemplate.getForEntity("/api/nodes/partyA/attachments/${hash}/test.txt", ByteArray::class.java)
+        attachment = this.restTemplate.getForEntity("/api/nodes/partya/attachments/${hash}/test.txt", ByteArray::class.java)
         Assertions.assertEquals(OK, attachment.statusCode)
 
         // Test archive file browsing
         val paths = this.restTemplate.getForObject(
-                "/api/nodes/partyA/attachments/${hash}/paths",
+                "/api/nodes/partya/attachments/${hash}/paths",
                 List::class.java)
         logger.info("attachment paths: $paths")
         assertTrue(paths.containsAll(listOf("test.txt", "test.png")))
@@ -166,7 +166,7 @@ open class NodeIntegrationTests(
         testArchiveUploadAndDownload("test.zip", "application/zip")
         testArchiveUploadAndDownload("test.jar", "application/java-archive")
         // Ensure a proper 404
-        val attachment = this.restTemplate.getForEntity("/api/nodes/partyA/attachments/${SecureHash.randomSHA256()}", ByteArray::class.java)
+        val attachment = this.restTemplate.getForEntity("/api/nodes/partya/attachments/${SecureHash.randomSHA256()}", ByteArray::class.java)
         Assertions.assertEquals(NOT_FOUND, attachment.statusCode)
 
     }
@@ -182,7 +182,7 @@ open class NodeIntegrationTests(
 
         val entity = HttpEntity(parameters, headers)
 
-        val response = this.restTemplate.exchange("/api/nodes/partyA/attachments",
+        val response = this.restTemplate.exchange("/api/nodes/partya/attachments",
                 HttpMethod.POST, entity, JsonNode::class.java, "")
 
         var attachmentReceipt: JsonNode? = response.body
@@ -202,7 +202,7 @@ open class NodeIntegrationTests(
         assertTrue(attachmentReceipt.get("savedOriginal").asBoolean())
         //TODO assertNotNull(attachmentReceipt.withArray("files").toList().find{it == fileName}.singleOrNull())
         // Test archive download
-        val attachment = this.restTemplate.getForEntity("/api/nodes/partyA/attachments/${hash}", ByteArray::class.java)
+        val attachment = this.restTemplate.getForEntity("/api/nodes/partya/attachments/${hash}", ByteArray::class.java)
         Assertions.assertEquals(OK, attachment.statusCode)
     }
 

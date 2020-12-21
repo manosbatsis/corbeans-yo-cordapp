@@ -120,6 +120,11 @@ class YoContract : Contract {
         object YoSchema
 
         object YoSchemaV1 : MappedSchema(YoSchema.javaClass, 1, listOf(PersistentYoState::class.java)) {
+
+            /** Specify the right migration file explicitly */
+            override val migrationResource: String = "yo-state-schema-v1.changelog-master"
+
+            /** [PersistentState] implementation for [YoState] */
             @Entity
             @Table(name = "yos")
             @NoArgs

@@ -22,42 +22,85 @@ bootJar {
 dependencies {
 
 	// CorDapp dependencies.
-	compile project(":cordapp-workflow")
+	implementation project(":cordapp-workflow")
 	// Vaultaire
-	compile "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
-	compile "com.github.manosbatsis.vaultaire:vaultaire-plugin-accounts:$vaultaire_version"
+	implementation "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
+	implementation "com.github.manosbatsis.vaultaire:vaultaire-plugin-accounts:$vaultaire_version"
 	// Corda Accounts
-	compile "$accounts_release_group:accounts-contracts:$accounts_release_version"
-	compile "$accounts_release_group:accounts-workflows:$accounts_release_version"
-	compile "$confidential_id_release_group:ci-workflows:$confidential_id_release_version"
+	implementation "$accounts_release_group:accounts-contracts:$accounts_release_version"
+	implementation "$accounts_release_group:accounts-workflows:$accounts_release_version"
+	implementation "$confidential_id_release_group:ci-workflows:$confidential_id_release_version"
 
 
 	// Corbeans
-	compile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter:$corbeans_version")
-	compile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-bnms-starter:$corbeans_version")
+	implementation ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter:$corbeans_version")
+	implementation ("com.github.manosbatsis.corbeans:corbeans-spring-boot-bnms-starter:$corbeans_version")
 	// Add support for RESTful errors
-	compile ("com.github.manosbatsis.scrudbeans:scrudbeans-error:$scrudbeans_version")
+	implementation ("com.github.manosbatsis.scrudbeans:scrudbeans-error:$scrudbeans_version")
 	// Spring Bot, OpenAPI/SpringDoc
-	compile("org.springframework.boot:spring-boot-starter-actuator:$spring_boot_version"){
+	implementation("org.springframework.boot:spring-boot-starter-actuator:$spring_boot_version"){
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
-	compile("org.springframework.boot:spring-boot-starter-web:$spring_boot_version") {
+	implementation("org.springframework.boot:spring-boot-starter-web:$spring_boot_version") {
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
-	compile "org.springdoc:springdoc-openapi-ui:${springdoc_version}"
-	compile ("org.springdoc:springdoc-openapi-data-rest:${springdoc_version}"){
+	implementation("org.springframework.boot:spring-boot-starter-security:$spring_boot_version") {
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
+
+	implementation "org.springdoc:springdoc-openapi-ui:${springdoc_version}"
+	implementation "org.springdoc:springdoc-openapi-security:${springdoc_version}"
+
+	/*implementation ("org.springdoc:springdoc-openapi-data-rest:${springdoc_version}"){
+		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+	}*/
+	implementation "org.apache.httpcomponents:httpclient:4.5.13"
 	compileOnly("org.springframework.boot:spring-boot-configuration-processor:$spring_boot_version"){
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
 
-	testCompile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_version"){
+	testImplementation ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_version"){
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
-	testCompile ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_version"){
+	testImplementation ("com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_version"){
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 	}
 	testImplementation("com.github.manosbatsis.corda.testacles:corda-testacles-nodedriver:$testacles_version")
+	testImplementation("com.github.manosbatsis.corda.testacles:corda-testacles-testcontainers:$testacles_version")
 
+}
+
+test {
+	description = "Runs tests using a NodeDriver-based Corda network"
+	// Use jupiter
+	useJUnitPlatform {
+		maxHeapSize = "3g"
+		includeEngines 'junit-jupiter'
+		if (project.hasProperty('enableTestLogging') && project.enableTestLogging) {
+			testLogging.showStandardStreams = true
+			testLogging.exceptionFormat = 'full'
+		}
+		else {
+			testLogging.showStandardStreams = false
+		}
+		include '**/NodeDriverTest.class'
+	}
+}
+
+task integrationTest(type: Test, dependsOn: ":deployNodes") {
+	description = "Runs tests using a testcontainers-based Corda network"
+	maxParallelForks = 1
+	maxHeapSize = "3g"
+	testLogging.showStandardStreams = true
+	useJUnitPlatform {
+		includeEngines 'junit-jupiter'
+		/*if (project.hasProperty('enableTestLogging') && project.enableTestLogging) {
+			testLogging.showStandardStreams = true
+			testLogging.exceptionFormat = 'full'
+		}
+		else {
+			testLogging.showStandardStreams = false
+		}*/
+		include '**/TestContainersTest.class'
+	}
 }

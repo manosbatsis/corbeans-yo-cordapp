@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="manos" id="yos">
+        <createTable tableName="yos">
+            <column name="output_index" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_id" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="linear_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="origin" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="target" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reply_message" type="varchar(255)">
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="output_index, transaction_id"
+                       constraintName="PK_yos"
+                       tableName="yos"/>
+    </changeSet>
+</databaseChangeLog>

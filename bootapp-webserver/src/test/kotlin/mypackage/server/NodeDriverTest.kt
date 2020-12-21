@@ -21,24 +21,16 @@
  */
 package mypackage.server
 
-import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
 import com.github.manosbatsis.corbeans.test.integration.CorbeansSpringExtension
-import mypackage.server.innertests.InfoIntegrationTests
-import mypackage.server.innertests.NodeIntegrationTests
-import mypackage.server.innertests.StateIntegrationTests
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 
 
 /**
- * Same as [SingleNetworkIntegrationTest] only using [CorbeansSpringExtension]
- * instead of extending [WithImplicitNetworkIT]
+ * Executes the [AbstractRootTest] testsuite
+ * against a NodeDriver-based Corda network.
  */
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = [
@@ -48,28 +40,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate
             "logging.level.mypackage=DEBUG"])
 // Note we are using CorbeansSpringExtension Instead of SpringExtension
 @ExtendWith(CorbeansSpringExtension::class)
-class MainIntegrationTest {
+class NodeDriverTest: AbstractRootTest() {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(MainIntegrationTest::class.java)
+        private val logger = LoggerFactory.getLogger(NodeDriverTest::class.java)
     }
-
-    // autowire a network service, used to access node services
-    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-    @Autowired
-    lateinit var networkService: CordaNetworkService
-
-    @Autowired
-    lateinit var restTemplate: TestRestTemplate
-
-    @Nested
-    inner class `Can access Actuator and Swagger` : InfoIntegrationTests(restTemplate, networkService)
-
-    @Nested
-    inner class `Can access Node APIs` : NodeIntegrationTests(restTemplate, networkService)
-
-    @Nested
-    inner class `Can query and track states` : StateIntegrationTests(restTemplate, networkService)
-
-
 }

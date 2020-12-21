@@ -22,7 +22,6 @@
 package mypackage.server
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.ComponentScan
 
@@ -30,9 +29,7 @@ import org.springframework.context.annotation.ComponentScan
 /**
  * Our Spring Boot application.
  */
-// Remove security and error handling
 @SpringBootApplication(
-        exclude = arrayOf(SecurityAutoConfiguration::class),
         excludeName = ["org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration",
             "org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration"]
 )

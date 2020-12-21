@@ -32,7 +32,11 @@
 
 		<!-- LOG "com.baeldung*" at TRACE level -->
 		<Logger name="net.corda" level="info"></Logger>
-		<Logger name="com.github.manosbatsis" level="debug"></Logger>
+		<Logger name="com.github.manosbatsis" level="debug">
+
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref="RollingFile"/>
+		</Logger>
 		<Logger name="mypackage" level="debug"></Logger>
 	</Loggers>
 
