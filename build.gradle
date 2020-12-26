@@ -48,7 +48,7 @@ buildscript {
         scrudbeans_version = '0.28'
         testacles_version = '0.16'
         vaultaire_version = '0.33'
-        partiture_version = '0.16'
+        partiture_version = '0.15'
         springdoc_version = '1.2.30'
         poolboy_version = '0.4'
 
