@@ -74,7 +74,8 @@ class YoService {
         // Use an RPC connection pool
         return nodeService.withNodeRpcConnection {
             // Start the flow, block and wait for the response.
-            it.proxy.startFlowDynamic(UpdateYoFlow::class.java, input).returnValue.getOrThrow()
+            it.proxy.startFlowDynamic(UpdateYoFlow::class.java, input)
+                .returnValue.getOrThrow()
         }
     }
 
