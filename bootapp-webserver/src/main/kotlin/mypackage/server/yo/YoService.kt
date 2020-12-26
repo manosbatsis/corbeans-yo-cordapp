@@ -28,6 +28,7 @@ import mypackage.cordapp.workflow.YoStateLiteDto
 import mypackage.cordapp.workflow.YoStateService
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
+import net.corda.core.utilities.getOrThrow
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
