@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import mypackage.cordapp.workflow.YoStateLiteDto
 import mypackage.cordapp.workflow.yoStateQuery
+import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
 import org.slf4j.LoggerFactory
@@ -79,12 +80,15 @@ class YoController {
             @RequestBody input: YoStateLiteDto
     ): YoStateLiteDto = yoService.createAndSend(normalizeNodeName(nodeName), input)
 
-    @RequestMapping(method = [PUT, PATCH])
+    @RequestMapping(path = ["{id}"], method = [PUT, PATCH])
     @Operation(description = "Reply to a Yo!", summary = "Update and reply to a Yo! from another account")
     fun update(
             @PathVariable nodeName: Optional<String>,
+            @PathVariable id: UUID,
             @RequestBody input: YoStateLiteDto
-    ): YoStateLiteDto = yoService.updateAndReply(normalizeNodeName(nodeName), input)
+    ): YoStateLiteDto = yoService.updateAndReply(
+        normalizeNodeName(nodeName),
+        input.copy(linearId = UniqueIdentifier(id = id)))
 
     @GetMapping
     @Operation(summary = "Get a page of known Sample Requests")

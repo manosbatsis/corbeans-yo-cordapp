@@ -22,13 +22,12 @@
 package mypackage.server.yo
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
-import mypackage.cordapp.contract.YoContract.YoState
 import mypackage.cordapp.workflow.CreateYoFlow
+import mypackage.cordapp.workflow.UpdateYoFlow
 import mypackage.cordapp.workflow.YoStateLiteDto
 import mypackage.cordapp.workflow.YoStateService
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
-import net.corda.core.utilities.getOrThrow
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -53,10 +52,9 @@ class YoService {
             input: YoStateLiteDto
     ): YoStateLiteDto {
         val nodeService = networkService.getNodeService(nodeName)
-        logger.debug("Sending DTO input: {}", input)
-        // Start the flow, block and wait for the response.
+        // Use an RPC connection pool
         return nodeService.withNodeRpcConnection {
-            logger.debug("Calling flow")
+            // Start the flow, block and wait for the response.
             it.proxy.startFlowDynamic(CreateYoFlow::class.java, input)
                 .returnValue.getOrThrow()
         }
@@ -71,12 +69,11 @@ class YoService {
             nodeName: String?,
             input: YoStateLiteDto
     ): YoStateLiteDto {
-        logger.debug("Replying DTO input: {}", input)
         val nodeService = networkService.getNodeService(nodeName)
-
-        // Start the flow, block and wait for the response.
+        // Use an RPC connection pool
         return nodeService.withNodeRpcConnection {
-            it.proxy.startFlowDynamic(CreateYoFlow::class.java, input).returnValue.getOrThrow()
+            // Start the flow, block and wait for the response.
+            it.proxy.startFlowDynamic(UpdateYoFlow::class.java, input).returnValue.getOrThrow()
         }
     }
 
@@ -90,8 +87,7 @@ class YoService {
             criteria: QueryCriteria,
             pageSpecification: PageSpecification
     ): ResultsPage<YoStateLiteDto> {
-        val stateService: YoStateService = networkService.getNodeService(nodeName)
-                .createStateService(YoState::class.java)
+        val stateService: YoStateService = YoStateService(networkService.getNodeRpcPool(nodeName))
         val vaultPage = stateService.queryBy(criteria, pageSpecification)
 
         // Map results and return

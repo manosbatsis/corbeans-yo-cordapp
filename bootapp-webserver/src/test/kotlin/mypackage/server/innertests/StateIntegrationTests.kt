@@ -78,7 +78,7 @@ open class StateIntegrationTests(
         val aCoountInfoDto = AccountInfoLiteDto.mapToDto(aAccountInfo, aAccountInfoService)
         val bCoountInfoDto = AccountInfoLiteDto.mapToDto(bAccountInfo, bAccountInfoService)
         val message = "AYo"
-        val dto = YoStateLiteDto(
+        var dto = YoStateLiteDto(
             origin = aCoountInfoDto,
             target = bCoountInfoDto,
             message = message)
@@ -90,21 +90,29 @@ open class StateIntegrationTests(
         assertEquals(bCoountInfoDto, sentYoDto.target)
         assertEquals(message, sentYoDto.message)
 
-        // Give some time to the async tracking process
+        // Give some time to the async process
         Thread.sleep(3000);
 
         // Reply from Account B tp Account A
         logger.info("Reply from Account B tp Account A")
         val replyMessage = "BYo"
-        this.restTemplate.exchange(
-                "/partyb/api/yo${sentYoDto.linearId!!.id}", HttpMethod.PUT,
-                HttpEntity(sentYoDto.copy(replyMessage = replyMessage)),
-                YoStateLiteDto::class.java)
+        dto = dto.copy(replyMessage = replyMessage)
+        logger.info("Updating DTO: ${dto}")
+        val updatedYoDto = this.restTemplate.exchange(
+                "/partyb/api/yo/${sentYoDto.linearId!!.id}", HttpMethod.PUT,
+                HttpEntity(dto),
+                YoStateLiteDto::class.java).body
+        logger.info("Updated DTO: ${updatedYoDto}")
+
+        // Give some time to the async process
+        Thread.sleep(3000)
+        assertEquals(sentYoDto!!.linearId, updatedYoDto!!.linearId)
+        assertEquals(replyMessage, updatedYoDto!!.replyMessage)
 
         logger.info("validateQueryResults")
         // Query node vaults
-        validateQueryResults("partya", sentYoDto.linearId!!, replyMessage)
-        validateQueryResults("partyb", sentYoDto.linearId!!, replyMessage)
+        validateQueryResults("partya", updatedYoDto.linearId!!, replyMessage)
+        validateQueryResults("partyb", updatedYoDto.linearId!!, replyMessage)
 
     }
 
@@ -125,7 +133,7 @@ open class StateIntegrationTests(
         logger.info("validateQueryResults yoDto: ${yoDto}")
         // 2nd by query
         val yoDtoPage = restTemplate.exchange(
-            "/$nodeName/api/yo?message=${replyMessage}", HttpMethod.GET,
+            "/$nodeName/api/yo?replyMessage=${replyMessage}", HttpMethod.GET,
             HttpEntity.EMPTY,
             parameterizedTypeReference<ResultsPage<YoStateLiteDto>>())
             .body
