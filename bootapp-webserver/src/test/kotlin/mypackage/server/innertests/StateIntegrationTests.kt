@@ -36,9 +36,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.RequestEntity
-import java.net.URI
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -62,7 +59,6 @@ open class StateIntegrationTests(
         services.forEach { (state, service) ->
             logger.info("Service state: ${state.javaClass.canonicalName}, class: ${service.canonicalName}")
         }
-
         logger.info("Network service class: ${networkService.javaClass.canonicalName}")
         // Init services
         val aNodeService = networkService.getNodeService("partya")
@@ -81,7 +77,7 @@ open class StateIntegrationTests(
         // Send Yo from Account A to Account B
         val aCoountInfoDto = AccountInfoLiteDto.mapToDto(aAccountInfo, aAccountInfoService)
         val bCoountInfoDto = AccountInfoLiteDto.mapToDto(bAccountInfo, bAccountInfoService)
-        val message = "A sent Yo! to B"
+        val message = "AYo"
         val dto = YoStateLiteDto(
             origin = aCoountInfoDto,
             target = bCoountInfoDto,
@@ -98,12 +94,14 @@ open class StateIntegrationTests(
         Thread.sleep(3000);
 
         // Reply from Account B tp Account A
-        val replyMessage = "B replied Yo! to A"
+        logger.info("Reply from Account B tp Account A")
+        val replyMessage = "BYo"
         this.restTemplate.exchange(
                 "/partyb/api/yo${sentYoDto.linearId!!.id}", HttpMethod.PUT,
                 HttpEntity(sentYoDto.copy(replyMessage = replyMessage)),
                 YoStateLiteDto::class.java)
 
+        logger.info("validateQueryResults")
         // Query node vaults
         validateQueryResults("partya", sentYoDto.linearId!!, replyMessage)
         validateQueryResults("partyb", sentYoDto.linearId!!, replyMessage)
@@ -111,11 +109,12 @@ open class StateIntegrationTests(
     }
 
     /** Ensure proper Vault storage */
-    fun validateQueryResults(
+    private fun validateQueryResults(
         nodeName: String,
         linearId: UniqueIdentifier,
         replyMessage: String) {
-
+        logger.info("validateQueryResults nodeName: ${nodeName}, " +
+                "linearId: $linearId, replyMessage: $replyMessage")
         // Ensure yo state can be retrieved from vault,
         // 1st by id.
         val yoDto = this.restTemplate.getForObject(
@@ -123,13 +122,16 @@ open class StateIntegrationTests(
             YoStateLiteDto::class.java)
         assertNotNull(yoDto)
 
+        logger.info("validateQueryResults yoDto: ${yoDto}")
         // 2nd by query
-        val yoDtoPage: ResultsPage<YoStateLiteDto>? = this.restTemplate.exchange(
-            RequestEntity<Any>(GET, URI.create("/$nodeName/api/yo")),
-            parameterizedTypeReference<ResultsPage<YoStateLiteDto>>()
-        ).body
+        val yoDtoPage = restTemplate.exchange(
+            "/$nodeName/api/yo?message=${replyMessage}", HttpMethod.GET,
+            HttpEntity.EMPTY,
+            parameterizedTypeReference<ResultsPage<YoStateLiteDto>>())
+            .body
 
-        assertEquals(linearId, yoDtoPage!!.content.single().linearId)
+        logger.info("validateQueryResults yoDtoPage: ${yoDtoPage}")
+        assertEquals(linearId, yoDtoPage?.content?.single()?.linearId)
 
     }
 

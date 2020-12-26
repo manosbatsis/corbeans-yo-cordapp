@@ -64,7 +64,7 @@ class TestContainersTest: AbstractRootTest() {
                 .parentFile.resolve("build/nodes"),
             cloneNodesDir = true,
             network = network,
-            privilegedMode = true
+            imageCordaArgs = "--logging-level DEBUG"
             // Uncomment to use Postgres containers instead of embedded H2
             //databaseSettings = CordformDatabaseSettingsFactory.POSTGRES
         )

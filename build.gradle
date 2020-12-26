@@ -46,10 +46,11 @@ buildscript {
         kotlinutils_version = '0.20'
         corbeans_version = '0.51'
         scrudbeans_version = '0.28'
-        testacles_version = '0.14'
+        testacles_version = '0.16'
         vaultaire_version = '0.33'
-        partiture_version = '0.15'
+        partiture_version = '0.16'
         springdoc_version = '1.2.30'
+        poolboy_version = '0.4'
 
         quasar_group = 'co.paralleluniverse'
         quasar_version = constants.getProperty("quasarVersion")
@@ -218,6 +219,7 @@ subprojects {
     }
 
     dependencies{
+
         // Kotlin
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
@@ -258,6 +260,7 @@ dependencies {
     // Use Vaultaire for query DSL, DTOs and services generation
     cordapp "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
     cordapp "com.github.manosbatsis.vaultaire:vaultaire-plugin-accounts:$vaultaire_version"
+    cordapp("com.github.manosbatsis.kotlin-utils:kotlin-utils-api:$kotlinutils_version")
     cordaCompile "org.apache.logging.log4j:log4j-slf4j-impl:${log4j_version}"
     cordaCompile "org.apache.logging.log4j:log4j-web:${log4j_version}"
     cordaCompile "org.slf4j:jul-to-slf4j:$slf4j_version"
@@ -287,6 +290,7 @@ task deployNodes(
         // Vaultaire, Partiture
         cordapp "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
         cordapp "com.github.manosbatsis.vaultaire:vaultaire-plugin-accounts:$vaultaire_version"
+        cordapp("com.github.manosbatsis.kotlin-utils:kotlin-utils-api:$kotlinutils_version")
         cordapp "com.github.manosbatsis.partiture:partiture:$partiture_version"
         // Confidential Identities
         cordapp "$confidential_id_release_group:ci-workflows:$confidential_id_release_version"
@@ -319,7 +323,7 @@ task deployNodes(
         }
         // Uncomment to have the runnodes script launch the spring boot server
         //webPort 8080
-        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/bootapp-webserver-${project.version}.jar"
     }
     node {
         name "O=PartyB,L=New York,C=US"

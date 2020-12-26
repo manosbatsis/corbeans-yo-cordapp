@@ -20,7 +20,6 @@ bootJar {
 }
 
 dependencies {
-
 	// CorDapp dependencies.
 	implementation project(":cordapp-workflow")
 	// Vaultaire

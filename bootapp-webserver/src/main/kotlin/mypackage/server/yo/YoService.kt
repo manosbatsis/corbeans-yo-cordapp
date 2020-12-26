@@ -22,7 +22,6 @@
 package mypackage.server.yo
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
-import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNodeServiceImpl
 import mypackage.cordapp.contract.YoContract.YoState
 import mypackage.cordapp.workflow.CreateYoFlow
 import mypackage.cordapp.workflow.YoStateLiteDto
@@ -38,7 +37,7 @@ import org.springframework.stereotype.Service
 class YoService {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(CordaNodeServiceImpl::class.java)
+        private val logger = LoggerFactory.getLogger(YoService::class.java)
     }
 
     @Autowired
@@ -57,7 +56,9 @@ class YoService {
         logger.debug("Sending DTO input: {}", input)
         // Start the flow, block and wait for the response.
         return nodeService.withNodeRpcConnection {
-            it.proxy.startFlowDynamic(CreateYoFlow::class.java, input).returnValue.getOrThrow()
+            logger.debug("Calling flow")
+            it.proxy.startFlowDynamic(CreateYoFlow::class.java, input)
+                .returnValue.getOrThrow()
         }
     }
 
