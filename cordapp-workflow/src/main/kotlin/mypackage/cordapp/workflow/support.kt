@@ -34,7 +34,7 @@ import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResp
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
-import com.github.manotbatsis.kotlin.utils.api.DefaultValue
+import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import mypackage.cordapp.contract.YO_CONTRACT_ID
 import mypackage.cordapp.contract.YoContract.Commands
 import mypackage.cordapp.contract.YoContract.Companion.unrecognisedCommand

@@ -21,9 +21,14 @@
  */
 package mypackage.server.yo
 
+import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlArgumentsConverterFactory
+import com.github.manosbatsis.vaultaire.plugin.rsql.support.ConversionServiceAdapterRsqlArgumentsConverter
+import com.github.manosbatsis.vaultaire.plugin.rsql.withRsql
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
+import mypackage.cordapp.contract.YoContract.YoState.YoSchemaV1.PersistentYoState
+import mypackage.cordapp.workflow.PersistentYoStateFields
 import mypackage.cordapp.workflow.YoStateLiteDto
 import mypackage.cordapp.workflow.yoStateQuery
 import net.corda.core.contracts.UniqueIdentifier
@@ -31,6 +36,8 @@ import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.core.convert.ConversionService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -65,6 +72,14 @@ class YoController {
     @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     lateinit var yoService: YoService
 
+    @Autowired
+    @Qualifier("mvcConversionService")
+    lateinit var conversionService: ConversionService
+
+    /** Used for RSQL argument parsing and type conversion */
+    val yoStateRsqlConverterFactory: RsqlArgumentsConverterFactory<PersistentYoState, PersistentYoStateFields> by lazy {
+        ConversionServiceAdapterRsqlArgumentsConverter.Factory<PersistentYoState, PersistentYoStateFields>(conversionService)
+    }
 
     /**
      * Handle both "api/yo" and "{nodeName}/api/yo" by using `cordform` as the default
@@ -96,6 +111,10 @@ class YoController {
         @PathVariable
         nodeName: Optional<String>,
 
+        @Parameter(description = "The RSQL filter to use, optional", required = false)
+        @RequestParam("filter", required = false)
+        filter: String? = null,
+
         @Parameter(description = "The page number, optional", required = false, example = "1")
         @RequestParam("pn", required = false, defaultValue = "1") pn: Int,
 
@@ -114,8 +133,8 @@ class YoController {
         @Parameter(description = "The Yo reply message", required = false)
         @RequestParam("replyMessage", required = false) replyMessage: String? = null
     ): ResultsPage<YoStateLiteDto> {
-
-        val query = yoStateQuery {
+        // Support plain URL params...
+        val queryCriteria = yoStateQuery {
             status = Vault.StateStatus.UNCONSUMED
             and {
                 if(origin != null) fields.origin `==` origin
@@ -127,9 +146,11 @@ class YoController {
                 recordedTime sort DESC
             }
         }
+        // ... and/or add RSQL filter if present
+        .withRsql(filter, yoStateRsqlConverterFactory)
+        // Build criteria query
+        .toCriteria()
         return yoService.findPaged(nodeName.get(),
-                query.toCriteria(), PageSpecification(pn, ps))
-
-
+                queryCriteria, PageSpecification(pn, ps))
     }
 }

@@ -25,6 +25,7 @@ dependencies {
 	// Vaultaire
 	implementation "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
 	implementation "com.github.manosbatsis.vaultaire:vaultaire-plugin-accounts:$vaultaire_version"
+	implementation "com.github.manosbatsis.vaultaire:vaultaire-plugin-rsql:$vaultaire_version"
 	// Corda Accounts
 	implementation "$accounts_release_group:accounts-contracts:$accounts_release_version"
 	implementation "$accounts_release_group:accounts-workflows:$accounts_release_version"

@@ -42,15 +42,15 @@ buildscript {
         netty_version = constants.getProperty("nettyVersion")
         dokka_version = '0.9.17'
         jupiter_api = '5.6.2'
-
-        kotlinutils_version = '0.20'
-        corbeans_version = '0.51'
-        scrudbeans_version = '0.28'
-        testacles_version = '0.16'
-        vaultaire_version = '0.33'
-        partiture_version = '0.15'
         springdoc_version = '1.2.30'
-        poolboy_version = '0.4'
+
+        kotlinutils_version = constants.getProperty("kotlinutilsVersion")
+        corbeans_version = constants.getProperty("corbeansVersion")
+        scrudbeans_version = constants.getProperty("scrudbeansVersion")
+        testacles_version = constants.getProperty("testaclesVersion")
+        vaultaire_version = constants.getProperty("vaultaireVersion")
+        partiture_version = constants.getProperty("partitureVersion")
+        poolboy_version = constants.getProperty("poolboyVersion")
 
         quasar_group = 'co.paralleluniverse'
         quasar_version = constants.getProperty("quasarVersion")
