@@ -28,6 +28,7 @@ import mypackage.cordapp.workflow.YoStateLiteDto
 import mypackage.cordapp.workflow.YoStateService
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
+import net.corda.core.node.services.vault.Sort
 import net.corda.core.utilities.getOrThrow
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -85,12 +86,13 @@ class YoService {
      * @param criteria the query criteria
      */
     fun findPaged(
-            nodeName: String?,
-            criteria: QueryCriteria,
-            pageSpecification: PageSpecification
+        nodeName: String?,
+        criteria: QueryCriteria,
+        sort: Sort,
+        pageSpecification: PageSpecification
     ): ResultsPage<YoStateLiteDto> {
         val stateService: YoStateService = YoStateService(networkService.getNodeRpcPool(nodeName))
-        val vaultPage = stateService.queryBy(criteria, pageSpecification)
+        val vaultPage = stateService.queryBy(criteria, pageSpecification, sort)
 
         // Map results and return
         return ResultsPage(

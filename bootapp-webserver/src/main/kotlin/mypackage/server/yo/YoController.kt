@@ -34,6 +34,7 @@ import mypackage.cordapp.workflow.yoStateQuery
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
+import net.corda.core.node.services.vault.Sort.Direction
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -121,6 +122,13 @@ class YoController {
         @Parameter(description = "The page size, optional with default being 10", required = false, example = "10")
         @RequestParam("ps", required = false, defaultValue = "10") ps: Int,
 
+        @Parameter(description = "The field to use for sorting", required = false, example = "10")
+        @RequestParam("sort", required = false)
+        sort: String? = null,
+        @Parameter(description = "The sort direction, either ASC or DESC", required = false, example = "DESC")
+        @RequestParam("direction", required = false, defaultValue = "DESC")
+        direction: Direction = Direction.DESC,
+
         @Parameter(description = "The Yo sender account identifier, i.e. a UUID", required = false)
         @RequestParam("origin", required = false) origin: UUID? = null,
 
@@ -133,24 +141,24 @@ class YoController {
         @Parameter(description = "The Yo reply message", required = false)
         @RequestParam("replyMessage", required = false) replyMessage: String? = null
     ): ResultsPage<YoStateLiteDto> {
-        // Support plain URL params...
-        val queryCriteria = yoStateQuery {
+        val query = yoStateQuery {
             status = Vault.StateStatus.UNCONSUMED
+            // Add plain URL params if any
             and {
                 if(origin != null) fields.origin `==` origin
                 if(target != null) fields.target `==` target
                 if(message != null) fields.message `==` message
                 if(replyMessage != null) fields.replyMessage `==` replyMessage
             }
+            // Add sorting
             orderBy {
-                recordedTime sort DESC
+                fields.fieldsByName[sort] ?: recordedTime sort direction
             }
         }
-        // ... and/or add RSQL filter if present
+        // Apply RSQL filter if present
         .withRsql(filter, yoStateRsqlConverterFactory)
         // Build criteria query
-        .toCriteria()
         return yoService.findPaged(nodeName.get(),
-                queryCriteria, PageSpecification(pn, ps))
+                query.toCriteria(), query.toSort(), PageSpecification(pn, ps))
     }
 }
