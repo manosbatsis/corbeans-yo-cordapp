@@ -9,7 +9,8 @@ Spring Boot and Corda. It also demonstrates some approaches towards more
 maintainable code using the following projects:
 
 - [Partiture](https://manosbatsis.github.io/partiture/) for component-based Flows
-- [Vaultaire](https://manosbatsis.github.io/vaultaire/) for auto-generating data access services, DTOs and query DSL for your Corda states
+- [Vaultaire](https://manosbatsis.github.io/vaultaire/) for auto-generating data access services, 
+  DTOs, query DSL and RSQL support for your Corda states
 - [Corda RPC PoolBoy](https://manosbatsis.github.io/corda-rpc-poolboy/) for RPC connection pooling
 - [Corda Testacles](https://github.com/manosbatsis/corda-testacles) for testing with MockNetwork, Node Driver, or Docker
 
