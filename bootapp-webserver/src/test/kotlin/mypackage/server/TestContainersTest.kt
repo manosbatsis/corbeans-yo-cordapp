@@ -59,7 +59,7 @@ class TestContainersTest: AbstractRootTest() {
         @Container
         @JvmStatic
         val cordformNetworkContainer = CordformNetworkContainer(
-            imageName = NodeImageNameConfig.CORDA_OS_ZULU_4_6,
+            imageName = NodeImageNameConfig.CORDA_OS_ZULU_4_7,
             nodesDir = File(System.getProperty("user.dir"))
                 .parentFile.resolve("build/nodes"),
             cloneNodesDir = true,
