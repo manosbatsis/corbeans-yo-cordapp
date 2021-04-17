@@ -150,9 +150,12 @@ class YoController {
                 if(message != null) fields.message `==` message
                 if(replyMessage != null) fields.replyMessage `==` replyMessage
             }
-            // Add sorting
+            // Add sorting by field if given,
+            // last updated (TX time) otherwise
             orderBy {
-                fields.fieldsByName[sort] ?: recordedTime sort direction
+                fields.fieldsByName[sort]
+                    ?.also { it sort direction }
+                    ?: recordedTime sort direction
             }
         }
         // Apply RSQL filter if present
