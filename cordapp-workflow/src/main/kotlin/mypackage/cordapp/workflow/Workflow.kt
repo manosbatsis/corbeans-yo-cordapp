@@ -23,7 +23,7 @@ package mypackage.cordapp.workflow
 
 
 import com.github.manosbatsis.partiture.flow.util.PartitureAccountsAwareFlow
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
+import com.github.manosbatsis.vaultaire.annotation.VaultaireFlowResponder
 import mypackage.cordapp.contract.YoContract
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
@@ -31,10 +31,10 @@ import net.corda.core.flows.StartableByRPC
 /** Create a Yo! state to send a Yo! message */
 @InitiatingFlow
 @StartableByRPC
-@VaultaireGenerateResponder(YoFlowResponder::class)
+@VaultaireFlowResponder(YoFlowResponder::class)
 class CreateYoFlow(
-        input: YoStateLiteDto
-): PartitureAccountsAwareFlow<YoStateLiteDto, YoStateLiteDto>(
+        input: YoStateClientDto
+): PartitureAccountsAwareFlow<YoStateClientDto, YoStateClientDto>(
         // We use generated DTOs as input/output
         input = input,
         // Our custom input converter
@@ -46,10 +46,10 @@ class CreateYoFlow(
 /** Update a Yo! state to reply to the Yo! message */
 @InitiatingFlow
 @StartableByRPC
-@VaultaireGenerateResponder(YoFlowResponder::class)
+@VaultaireFlowResponder(YoFlowResponder::class)
 class UpdateYoFlow(
-        input: YoStateLiteDto
-): PartitureAccountsAwareFlow<YoStateLiteDto, YoStateLiteDto>(
+        input: YoStateClientDto
+): PartitureAccountsAwareFlow<YoStateClientDto, YoStateClientDto>(
         // We use generated DTOs as input/output
         input = input,
         // Our custom input converter

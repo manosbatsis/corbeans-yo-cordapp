@@ -32,8 +32,8 @@ import com.github.manosbatsis.partiture.flow.io.output.TypedOutputSingleStateCon
 import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
+import com.github.manosbatsis.vaultaire.annotation.VaultaireStateDtoMixin
+import com.github.manosbatsis.vaultaire.annotation.VaultaireStateUtilsMixin
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import mypackage.cordapp.contract.YO_CONTRACT_ID
 import mypackage.cordapp.contract.YoContract.Commands
@@ -46,13 +46,13 @@ import net.corda.core.flows.FlowException
 import net.corda.core.flows.FlowSession
 
 /** Used to trigger Vaultaire's Service, Query DSL and DTOs generation */
-@VaultaireGenerateForDependency(
+@VaultaireStateUtilsMixin(
         contractStateType = YoState::class,
         persistentStateType = PersistentYoState::class)
-@VaultaireGenerateDtoForDependency(
+@VaultaireStateDtoMixin(
         contractStateType = YoState::class,
         persistentStateType = PersistentYoState::class,
-        strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
+        strategies = [VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO, VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO])
 class YoMixin(
         @DefaultValue("UniqueIdentifier()")
         val linearId: UniqueIdentifier
@@ -61,10 +61,10 @@ class YoMixin(
 /** Input converter for Yo! workflows */
 class YoInputConverter(
         val command: TypeOnlyCommandData
-) : PartitureFlowDelegateBase(), InputConverter<YoStateLiteDto> {
+) : PartitureFlowDelegateBase(), InputConverter<YoStateClientDto> {
 
         @Suspendable
-        override fun convert(input: YoStateLiteDto): CallContext {
+        override fun convert(input: YoStateClientDto): CallContext {
 
                 // Obtain a Yo! state service
                 val stateService = YoStateService(clientFlow.serviceHub)
@@ -101,16 +101,16 @@ class YoInputConverter(
 /** Output converter for Yo! workflows */
 open class YoOutputConverter :
         PartitureFlowDelegateBase(),
-        OutputConverter<YoStateLiteDto> {
+        OutputConverter<YoStateClientDto> {
 
         private val innerConverter =
                 TypedOutputSingleStateConverter(YoState::class.java)
 
         @Suspendable
-        override  fun convert(input: CallContext): YoStateLiteDto {
+        override  fun convert(input: CallContext): YoStateClientDto {
                 val outState = innerConverter.convert(input)
                 val stateService = YoStateService(this.clientFlow.serviceHub)
-                return YoStateLiteDto.mapToDto(outState, stateService)
+                return YoStateClientDto.mapToDto(outState, stateService)
         }
 
 }

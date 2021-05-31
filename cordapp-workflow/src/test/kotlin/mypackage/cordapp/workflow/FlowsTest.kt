@@ -26,7 +26,7 @@ import com.github.manosbatsis.corda.testacles.mocknetwork.config.MockNetworkConf
 import com.github.manosbatsis.corda.testacles.mocknetwork.config.OrgNames
 import com.github.manosbatsis.corda.testacles.mocknetwork.jupiter.MockNetworkExtension
 import com.github.manosbatsis.corda.testacles.mocknetwork.jupiter.MockNetworkExtensionConfig
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.utilities.getOrThrow
@@ -80,9 +80,9 @@ class FlowsTest{
         val bAccountInfo = bAccountInfoService.createAccount("accountB").state.data
 
         // Send Yo from Account A to Account B
-        val sentYoDto = a.startFlow(CreateYoFlow(YoStateLiteDto(
-                AccountInfoLiteDto.mapToDto(aAccountInfo, aAccountInfoService),
-                AccountInfoLiteDto.mapToDto(bAccountInfo, bAccountInfoService),
+        val sentYoDto = a.startFlow(CreateYoFlow(YoStateClientDto(
+                AccountInfoStateClientDto.mapToDto(aAccountInfo, aAccountInfoService),
+                AccountInfoStateClientDto.mapToDto(bAccountInfo, bAccountInfoService),
                 "A sent Yo! to B")))
                 .getOrThrow()
         nodeHandles.network.waitQuiescent()

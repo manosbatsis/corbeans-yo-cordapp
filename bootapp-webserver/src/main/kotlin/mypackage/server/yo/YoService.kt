@@ -24,7 +24,7 @@ package mypackage.server.yo
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
 import mypackage.cordapp.workflow.CreateYoFlow
 import mypackage.cordapp.workflow.UpdateYoFlow
-import mypackage.cordapp.workflow.YoStateLiteDto
+import mypackage.cordapp.workflow.YoStateClientDto
 import mypackage.cordapp.workflow.YoStateService
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
@@ -51,8 +51,8 @@ class YoService {
      */
     fun createAndSend(
             nodeName: String?,
-            input: YoStateLiteDto
-    ): YoStateLiteDto {
+            input: YoStateClientDto
+    ): YoStateClientDto {
         val nodeService = networkService.getNodeService(nodeName)
         // Use an RPC connection pool
         return nodeService.withNodeRpcConnection {
@@ -69,8 +69,8 @@ class YoService {
      */
     fun updateAndReply(
             nodeName: String?,
-            input: YoStateLiteDto
-    ): YoStateLiteDto {
+            input: YoStateClientDto
+    ): YoStateClientDto {
         val nodeService = networkService.getNodeService(nodeName)
         // Use an RPC connection pool
         return nodeService.withNodeRpcConnection {
@@ -90,14 +90,14 @@ class YoService {
         criteria: QueryCriteria,
         sort: Sort,
         pageSpecification: PageSpecification
-    ): ResultsPage<YoStateLiteDto> {
+    ): ResultsPage<YoStateClientDto> {
         val stateService: YoStateService = YoStateService(networkService.getNodeRpcPool(nodeName))
         val vaultPage = stateService.queryBy(criteria, pageSpecification, sort)
 
         // Map results and return
         return ResultsPage(
                 content = vaultPage.states.map {
-                    YoStateLiteDto.mapToDto(it.state.data, stateService)
+                    YoStateClientDto.mapToDto(it.state.data, stateService)
                 },
                 pageNumber = pageSpecification.pageNumber,
                 pageSize = pageSpecification.pageSize,

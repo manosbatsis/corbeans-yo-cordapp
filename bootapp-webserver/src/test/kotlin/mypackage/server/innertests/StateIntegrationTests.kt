@@ -23,11 +23,11 @@ package mypackage.server.innertests
 
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import com.github.manosbatsis.vaultaire.registry.Registry
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
-import mypackage.cordapp.workflow.YoStateLiteDto
+import mypackage.cordapp.workflow.YoStateClientDto
 import mypackage.server.yo.ResultsPage
 import net.corda.core.contracts.UniqueIdentifier
 import org.junit.jupiter.api.Test
@@ -75,16 +75,16 @@ open class StateIntegrationTests(
         val bAccountInfo = bAccountInfoService.createAccount("accountB").state.data
 
         // Send Yo from Account A to Account B
-        val aCoountInfoDto = AccountInfoLiteDto.mapToDto(aAccountInfo, aAccountInfoService)
-        val bCoountInfoDto = AccountInfoLiteDto.mapToDto(bAccountInfo, bAccountInfoService)
+        val aCoountInfoDto = AccountInfoStateClientDto.mapToDto(aAccountInfo, aAccountInfoService)
+        val bCoountInfoDto = AccountInfoStateClientDto.mapToDto(bAccountInfo, bAccountInfoService)
         val message = "AYo"
-        var dto = YoStateLiteDto(
+        var dto = YoStateClientDto(
             origin = aCoountInfoDto,
             target = bCoountInfoDto,
             message = message)
         logger.info("Sending DTO: ${dto}")
         val sentYoDto = this.restTemplate.postForObject(
-            "/partya/api/yo", dto, YoStateLiteDto::class.java)
+            "/partya/api/yo", dto, YoStateClientDto::class.java)
         logger.info("Sent DTO: ${sentYoDto}")
         assertEquals(aCoountInfoDto, sentYoDto.origin)
         assertEquals(bCoountInfoDto, sentYoDto.target)
@@ -101,7 +101,7 @@ open class StateIntegrationTests(
         val updatedYoDto = this.restTemplate.exchange(
                 "/partyb/api/yo/${sentYoDto.linearId!!.id}", HttpMethod.PUT,
                 HttpEntity(dto),
-                YoStateLiteDto::class.java).body
+                YoStateClientDto::class.java).body
         logger.info("Updated DTO: ${updatedYoDto}")
 
         // Give some time to the async process
@@ -127,7 +127,7 @@ open class StateIntegrationTests(
         // 1st by id.
         val yoDto = this.restTemplate.getForObject(
             "/$nodeName/api/yo/${linearId.id}",
-            YoStateLiteDto::class.java)
+            YoStateClientDto::class.java)
         assertNotNull(yoDto)
 
         logger.info("validateQueryResults yoDto: ${yoDto}")
@@ -135,7 +135,7 @@ open class StateIntegrationTests(
         val yoDtoPage = restTemplate.exchange(
             "/$nodeName/api/yo?replyMessage=${replyMessage}", HttpMethod.GET,
             HttpEntity.EMPTY,
-            parameterizedTypeReference<ResultsPage<YoStateLiteDto>>())
+            parameterizedTypeReference<ResultsPage<YoStateClientDto>>())
             .body
 
         logger.info("validateQueryResults yoDtoPage: ${yoDtoPage}")

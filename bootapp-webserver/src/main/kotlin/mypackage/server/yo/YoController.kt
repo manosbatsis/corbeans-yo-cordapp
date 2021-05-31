@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import mypackage.cordapp.contract.YoContract.YoState.YoSchemaV1.PersistentYoState
 import mypackage.cordapp.workflow.PersistentYoStateFields
-import mypackage.cordapp.workflow.YoStateLiteDto
+import mypackage.cordapp.workflow.YoStateClientDto
 import mypackage.cordapp.workflow.yoStateQuery
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.node.services.Vault
@@ -93,16 +93,16 @@ class YoController {
     @Operation(description = "Send a Yo!", summary = "Create and send a Yo! to another account")
     fun create(
             @PathVariable nodeName: Optional<String>,
-            @RequestBody input: YoStateLiteDto
-    ): YoStateLiteDto = yoService.createAndSend(normalizeNodeName(nodeName), input)
+            @RequestBody input: YoStateClientDto
+    ): YoStateClientDto = yoService.createAndSend(normalizeNodeName(nodeName), input)
 
     @RequestMapping(path = ["{id}"], method = [PUT, PATCH])
     @Operation(description = "Reply to a Yo!", summary = "Update and reply to a Yo! from another account")
     fun update(
             @PathVariable nodeName: Optional<String>,
             @PathVariable id: UUID,
-            @RequestBody input: YoStateLiteDto
-    ): YoStateLiteDto = yoService.updateAndReply(
+            @RequestBody input: YoStateClientDto
+    ): YoStateClientDto = yoService.updateAndReply(
         normalizeNodeName(nodeName),
         input.copy(linearId = UniqueIdentifier(id = id)))
 
@@ -140,7 +140,7 @@ class YoController {
 
         @Parameter(description = "The Yo reply message", required = false)
         @RequestParam("replyMessage", required = false) replyMessage: String? = null
-    ): ResultsPage<YoStateLiteDto> {
+    ): ResultsPage<YoStateClientDto> {
         val query = yoStateQuery {
             status = Vault.StateStatus.UNCONSUMED
             // Add plain URL params if any
