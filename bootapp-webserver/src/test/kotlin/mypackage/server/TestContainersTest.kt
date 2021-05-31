@@ -83,12 +83,6 @@ class TestContainersTest: AbstractRootTest() {
                     val user = container.getDefaultRpcUser()
                     val prefix = "corbeans.nodes.$nodeName"
 
-                    logger.info("nodeProperties:" +
-                            "\n$prefix.partyName=${nodeConf.myLegalName}" +
-                            "\n$prefix.username=${user.username}" +
-                            "\n$prefix.password=${user.password}" +
-                            "\n$prefix.partyName=${nodeConf.myLegalName}" +
-                            "\n$prefix.address=${container.rpcAddress}")
                     with(registry) {
                         add("$prefix.partyName") { "${nodeConf.myLegalName}" }
                         add("$prefix.username") { user.username }
