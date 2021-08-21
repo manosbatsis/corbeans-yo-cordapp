@@ -75,8 +75,8 @@ open class StateIntegrationTests(
         val bAccountInfo = bAccountInfoService.createAccount("accountB").state.data
 
         // Send Yo from Account A to Account B
-        val aCoountInfoDto = AccountInfoStateClientDto.mapToDto(aAccountInfo, aAccountInfoService)
-        val bCoountInfoDto = AccountInfoStateClientDto.mapToDto(bAccountInfo, bAccountInfoService)
+        val aCoountInfoDto = AccountInfoStateClientDto.from(aAccountInfo, aAccountInfoService)
+        val bCoountInfoDto = AccountInfoStateClientDto.from(bAccountInfo, bAccountInfoService)
         val message = "AYo"
         var dto = YoStateClientDto(
             origin = aCoountInfoDto,

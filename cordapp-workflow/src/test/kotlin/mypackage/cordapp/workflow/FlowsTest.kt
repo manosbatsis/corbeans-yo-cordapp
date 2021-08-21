@@ -55,6 +55,7 @@ class FlowsTest{
             // Other cordapps
             cordappPackages = listOf(
                 "mypackage.cordapp.workflow",
+                "com.github.manosbatsis.partiture.flow",
                 "com.github.manosbatsis.vaultaire.dto",
                 "com.github.manosbatsis.vaultaire.plugin.accounts",
                 "com.r3.corda.lib.accounts.contracts",
@@ -81,8 +82,8 @@ class FlowsTest{
 
         // Send Yo from Account A to Account B
         val sentYoDto = a.startFlow(CreateYoFlow(YoStateClientDto(
-                AccountInfoStateClientDto.mapToDto(aAccountInfo, aAccountInfoService),
-                AccountInfoStateClientDto.mapToDto(bAccountInfo, bAccountInfoService),
+                AccountInfoStateClientDto.from(aAccountInfo, aAccountInfoService),
+                AccountInfoStateClientDto.from(bAccountInfo, bAccountInfoService),
                 "A sent Yo! to B")))
                 .getOrThrow()
         nodeHandles.network.waitQuiescent()
@@ -118,7 +119,9 @@ class FlowsTest{
         }.toCriteria()
 
         val aResults = stateService.queryBy(criteria)
-        assertTrue(aResults.totalStatesAvailable.toInt() == 1)
+        assertTrue(aResults.states.isNotEmpty())
+        // https://r3-cev.atlassian.net/browse/CORDA-2601
+        //assertEquals(1, aResults.totalStatesAvailable.toInt())
         assertEquals(linearId, aResults.states.single().state.data.linearId)
 
     }

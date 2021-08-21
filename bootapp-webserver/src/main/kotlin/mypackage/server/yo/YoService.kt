@@ -97,7 +97,7 @@ class YoService {
         // Map results and return
         return ResultsPage(
                 content = vaultPage.states.map {
-                    YoStateClientDto.mapToDto(it.state.data, stateService)
+                    YoStateClientDto.from(it.state.data, stateService)
                 },
                 pageNumber = pageSpecification.pageNumber,
                 pageSize = pageSpecification.pageSize,

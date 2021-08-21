@@ -110,7 +110,7 @@ open class YoOutputConverter :
         override  fun convert(input: CallContext): YoStateClientDto {
                 val outState = innerConverter.convert(input)
                 val stateService = YoStateService(this.clientFlow.serviceHub)
-                return YoStateClientDto.mapToDto(outState, stateService)
+                return YoStateClientDto.from(outState, stateService)
         }
 
 }

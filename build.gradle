@@ -74,6 +74,7 @@ buildscript {
                 'org.mockito**',
                 'org.opentest4j**',
                 'org.springframework**',
+                'org.testcontainers**',
                 'reactor.core.publisher**',
                 'com.github.manosbatsis.corbeans.spring.boot**'
         ]
@@ -92,7 +93,6 @@ buildscript {
     ext['netty.version'] = "$netty_version"
     ext['slf4j.version'] = "$slf4j_version"
     ext['log4j.version'] = "$log4j_version"
-
 
 
     repositories {
@@ -179,6 +179,23 @@ allprojects {
     }
 
     task allDeps(type: DependencyReportTask) {}
+
+    configurations {
+        all {
+            resolutionStrategy {
+                // Prefer modules
+                // that are part of this build
+                it.preferProjectModules()
+                eachDependency { DependencyResolveDetails details ->
+                    // Force corda_release_version
+                    if (details.requested.group == "net.corda") {
+                        details.useTarget group: corda_release_group, name: details.requested.name, version: corda_release_version
+
+                    }
+                }
+            }
+        }
+    }
 
 }
 
