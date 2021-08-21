@@ -99,7 +99,7 @@ open class StateIntegrationTests(
         dto = dto.copy(replyMessage = replyMessage)
         logger.info("Updating DTO: ${dto}")
         val updatedYoDto = this.restTemplate.exchange(
-                "/partyb/api/yo/${sentYoDto.linearId!!.id}", HttpMethod.PUT,
+                "/partyb/api/yo/${sentYoDto.linearId.id}", HttpMethod.PUT,
                 HttpEntity(dto),
                 YoStateClientDto::class.java).body
         logger.info("Updated DTO: ${updatedYoDto}")
@@ -107,7 +107,7 @@ open class StateIntegrationTests(
         // Give some time to the async process
         Thread.sleep(3000)
         assertEquals(sentYoDto!!.linearId, updatedYoDto!!.linearId)
-        assertEquals(replyMessage, updatedYoDto!!.replyMessage)
+        assertEquals(replyMessage, updatedYoDto.replyMessage)
 
         logger.info("validateQueryResults")
         // Query node vaults

@@ -51,6 +51,8 @@ buildscript {
         vaultaire_version = constants.getProperty("vaultaireVersion")
         partiture_version = constants.getProperty("partitureVersion")
         poolboy_version = constants.getProperty("poolboyVersion")
+        leanstate_version = constants.getProperty("leanstateVersion")
+
 
         quasar_group = 'co.paralleluniverse'
         quasar_version = constants.getProperty("quasarVersion")
@@ -203,6 +205,17 @@ allprojects {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'kotlin'
+
+
+    // Define an extra sources variable
+    def generatedSourcesDir = project.file("build/generated/source/kaptKotlin/main")
+    // Tell Gradle about the extra source set
+    sourceSets {
+        main {
+            kotlin.srcDirs += generatedSourcesDir
+        }
+    }
+
 
     jar {
         // This makes the JAR's SHA-256 hash repeatable.

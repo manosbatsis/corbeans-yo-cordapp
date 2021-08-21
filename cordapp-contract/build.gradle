@@ -1,14 +1,8 @@
 apply plugin: 'net.corda.plugins.cordapp'
-apply plugin: "kotlin-allopen"
-apply plugin: "kotlin-noarg"
+apply plugin: "kotlin-jpa"
+apply plugin: 'kotlin-kapt'
 
-allOpen {
-    annotation("com.github.manosbatsis.corda.rpc.poolboy.annotation.AllOpen")
-}
-noArg {
-    annotation("com.github.manosbatsis.corda.rpc.poolboy.annotation.NoArgs")
-    invokeInitializers = true
-}
+
 cordapp {
     targetPlatformVersion corda_platform_version
     minimumPlatformVersion corda_platform_version
@@ -28,6 +22,10 @@ dependencies {
     cordaCompile "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
     // Vaultaire annotation processing
     kapt "com.github.manosbatsis.vaultaire:vaultaire-processor:$vaultaire_version"
+    // Lean State Processor
+    cordaCompile "com.github.manosbatsis.corda.leanstate:leanstate-contracts:$leanstate_version"
+    kapt "com.github.manosbatsis.corda.leanstate:leanstate-processor:$leanstate_version"
+
     // Corda Accounts
     cordaCompile "$accounts_release_group:accounts-contracts:$accounts_release_version"
     // Corda dependencies.

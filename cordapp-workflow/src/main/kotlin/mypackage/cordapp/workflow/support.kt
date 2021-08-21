@@ -38,8 +38,8 @@ import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import mypackage.cordapp.contract.YO_CONTRACT_ID
 import mypackage.cordapp.contract.YoContract.Commands
 import mypackage.cordapp.contract.YoContract.Companion.unrecognisedCommand
-import mypackage.cordapp.contract.YoContract.YoState
-import mypackage.cordapp.contract.YoContract.YoState.YoSchemaV1.PersistentYoState
+import mypackage.cordapp.contract.YoState
+import mypackage.cordapp.contract.PersistentYoState
 import net.corda.core.contracts.TypeOnlyCommandData
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowException

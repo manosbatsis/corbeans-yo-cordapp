@@ -8,6 +8,7 @@ This project demonstrates how to apply Corbeans in order to create fully testabl
 Spring Boot and Corda. It also demonstrates some approaches towards more 
 maintainable code using the following projects:
 
+- [Lean State](https://manosbatsis.github.io/corda-lean-state/) for auto-generating  ContractState / PersistentState mappings
 - [Partiture](https://manosbatsis.github.io/partiture/) for component-based Flows
 - [Vaultaire](https://manosbatsis.github.io/vaultaire/) for auto-generating data access services, 
   DTOs, query DSL and RSQL support for your Corda states

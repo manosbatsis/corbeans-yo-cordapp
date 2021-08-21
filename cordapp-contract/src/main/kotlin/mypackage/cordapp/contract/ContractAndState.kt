@@ -21,26 +21,14 @@
  */
 package mypackage.cordapp.contract
 
-import com.github.manosbatsis.corda.rpc.poolboy.annotation.AllOpen
-import com.github.manosbatsis.corda.rpc.poolboy.annotation.NoArgs
-import com.github.manosbatsis.vaultaire.dto.AccountParty
 import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
-import net.corda.core.contracts.LinearState
 import net.corda.core.contracts.Requirements.using
 import net.corda.core.contracts.TypeOnlyCommandData
-import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.contracts.requireSingleCommand
 import net.corda.core.contracts.requireThat
-import net.corda.core.schemas.MappedSchema
-import net.corda.core.schemas.PersistentState
-import net.corda.core.schemas.QueryableState
 import net.corda.core.transactions.LedgerTransaction
 import java.security.PublicKey
-import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Table
 
 // Contract and state.
 val YO_CONTRACT_PACKAGE: String = YoContract::class.java.`package`.name
@@ -98,51 +86,6 @@ class YoContract : Contract {
         val command = tx.commands.requireSingleCommand<Commands.Reply>()
     }
 
-    // State.
-    data class YoState(
-            val origin: AccountParty,
-            val target: AccountParty,
-            val message: String,
-            var replyMessage: String? = null,
-            override val linearId: UniqueIdentifier = UniqueIdentifier()
-    ) : LinearState, QueryableState {
-        override val participants get() = listOf(origin.party, target.party)
-        override fun supportedSchemas() = listOf(YoSchemaV1)
-
-        override fun generateMappedObject(schema: MappedSchema) =
-                YoSchemaV1.PersistentYoState(
-                        linearId = linearId.id,
-                        origin = origin.identifier,
-                        target = target.identifier,
-                        message = message,
-                        replyMessage = replyMessage)
-
-        object YoSchema
-
-        object YoSchemaV1 : MappedSchema(YoSchema.javaClass, 1, listOf(PersistentYoState::class.java)) {
-
-            /** Specify the right migration file explicitly */
-            override val migrationResource: String = "yo-state-schema-v1.changelog-master"
-
-            /** [PersistentState] implementation for [YoState] */
-            @Entity
-            @Table(name = "yos")
-            @NoArgs
-            @AllOpen
-            class PersistentYoState(
-                    @Column(name = "linear_id", nullable = false)
-                    var linearId: UUID,
-                    @Column(name = "origin", nullable = false)
-                    var origin: UUID,
-                    @Column(name = "target", nullable = false)
-                    var target: UUID,
-                    @Column(nullable = false)
-                    var message: String,
-                    @Column(name = "reply_message")
-                    var replyMessage: String? = null
-            ) : PersistentState()
-        }
-    }
 }
 
 

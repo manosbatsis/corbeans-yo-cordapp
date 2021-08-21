@@ -27,7 +27,7 @@ import com.github.manosbatsis.vaultaire.plugin.rsql.withRsql
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
-import mypackage.cordapp.contract.YoContract.YoState.YoSchemaV1.PersistentYoState
+import mypackage.cordapp.contract.PersistentYoState
 import mypackage.cordapp.workflow.PersistentYoStateFields
 import mypackage.cordapp.workflow.YoStateClientDto
 import mypackage.cordapp.workflow.yoStateQuery
@@ -145,8 +145,8 @@ class YoController {
             status = Vault.StateStatus.UNCONSUMED
             // Add plain URL params if any
             and {
-                if(origin != null) fields.origin `==` origin
-                if(target != null) fields.target `==` target
+                if(origin != null) fields.originIdentifier `==` origin
+                if(target != null) fields.targetIdentifier `==` target
                 if(message != null) fields.message `==` message
                 if(replyMessage != null) fields.replyMessage `==` replyMessage
             }
