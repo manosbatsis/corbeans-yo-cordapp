@@ -22,10 +22,10 @@
 package mypackage.server.yo
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
-import mypackage.cordapp.workflow.CreateYoFlow
-import mypackage.cordapp.workflow.UpdateYoFlow
-import mypackage.cordapp.workflow.YoStateClientDto
-import mypackage.cordapp.workflow.YoStateService
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
+import com.github.manosbatsis.vaultaire.util.ResultsPage
+import mypackage.cordapp.contract.YoState
+import mypackage.cordapp.workflow.*
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.Sort
@@ -80,6 +80,7 @@ class YoService {
         }
     }
 
+
     /**
      * Find paged Yo!s
      * @param nodeName the current node name
@@ -91,19 +92,14 @@ class YoService {
         sort: Sort,
         pageSpecification: PageSpecification
     ): ResultsPage<YoStateClientDto> {
-        val stateService: YoStateService = YoStateService(networkService.getNodeRpcPool(nodeName))
-        val vaultPage = stateService.queryBy(criteria, pageSpecification, sort)
+        val stateService = YoStateService(networkService.getNodeRpcPool(nodeName))
 
-        // Map results and return
-        return ResultsPage(
-                content = vaultPage.states.map {
-                    YoStateClientDto.from(it.state.data, stateService)
-                },
-                pageNumber = pageSpecification.pageNumber,
-                pageSize = pageSpecification.pageSize,
-                totalResults = vaultPage.totalStatesAvailable,
-                sort = "none",
-                sortDirection = null)
+        fun yoStateClientDto(original: YoState) = YoStateClientDto.from(original, stateService)
+
+        return stateService.findResultsPage(
+                criteria = criteria,
+                paging = pageSpecification,
+                sort = sort,
+                transform = ::yoStateClientDto)
     }
-
 }

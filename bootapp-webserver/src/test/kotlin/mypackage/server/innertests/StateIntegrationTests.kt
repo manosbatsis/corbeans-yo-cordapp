@@ -26,9 +26,9 @@ import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkSer
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import com.github.manosbatsis.vaultaire.registry.Registry
+import com.github.manosbatsis.vaultaire.util.ResultsPage
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import mypackage.cordapp.workflow.YoStateClientDto
-import mypackage.server.yo.ResultsPage
 import net.corda.core.contracts.UniqueIdentifier
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory

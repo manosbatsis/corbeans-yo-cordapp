@@ -8,6 +8,7 @@ import javax.persistence.Column
 @LeanStateModel(
         contractClass = YoContract::class,
         contractStateName = "YoState",
+        tableName = "yos",
         persistentStateName = "PersistentYoState",
         migrationResource = "yo-state-schema-v1.changelog-master"
 )

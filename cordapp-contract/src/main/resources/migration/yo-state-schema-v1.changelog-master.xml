@@ -10,15 +10,30 @@
             <column name="transaction_id" type="varchar(64)">
                 <constraints nullable="false"/>
             </column>
-            <column name="linear_id" type="uuid">
+            <column name="linear_id_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="origin" type="uuid">
+            <column name="linear_id_external_id" type="varchar(255)">
+            </column>
+
+            <column name="origin_identifier" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="target" type="uuid">
+            <column name="origin_name" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="origin_external_id" type="varchar(255)">
+            </column>
+
+            <column name="target_identifier" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="target_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="target_external_id" type="varchar(255)">
+            </column>
+
             <column name="message" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>

@@ -87,13 +87,7 @@ test {
 	}
 }
 task ensureDeployNodes(){
-	project.afterEvaluate {
-
-		File nodes = file("${rootProject.buildDir}/nodes")
-		if (!nodes.exists()) {
-			dependsOn(":deployNodes")
-		}
-	}
+	dependsOn(":deployNodes")
 }
 task integrationTest(type: Test, dependsOn: ensureDeployNodes) {
 	description = "Runs tests using a testcontainers-based Corda network"

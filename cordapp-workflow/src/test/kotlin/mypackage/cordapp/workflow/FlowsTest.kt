@@ -82,9 +82,9 @@ class FlowsTest{
 
         // Send Yo from Account A to Account B
         val sentYoDto = a.startFlow(CreateYoFlow(YoStateClientDto(
-                AccountInfoStateClientDto.from(aAccountInfo, aAccountInfoService),
-                AccountInfoStateClientDto.from(bAccountInfo, bAccountInfoService),
-                "A sent Yo! to B")))
+                origin = AccountInfoStateClientDto.from(aAccountInfo, aAccountInfoService),
+                target = AccountInfoStateClientDto.from(bAccountInfo, bAccountInfoService),
+                message = "A sent Yo! to B")))
                 .getOrThrow()
         nodeHandles.network.waitQuiescent()
 
@@ -96,8 +96,8 @@ class FlowsTest{
         nodeHandles.network.waitQuiescent()
 
         // Query node vaults
-        validateQueryResults(aYoStateService, sentYoDto.linearId!!, replyMessage)
-        validateQueryResults(bYoStateService, sentYoDto.linearId!!, replyMessage)
+        validateQueryResults(aYoStateService, sentYoDto.linearId, replyMessage)
+        validateQueryResults(bYoStateService, sentYoDto.linearId, replyMessage)
 
     }
 

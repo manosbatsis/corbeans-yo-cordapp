@@ -24,6 +24,7 @@ package mypackage.server.yo
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlArgumentsConverterFactory
 import com.github.manosbatsis.vaultaire.plugin.rsql.support.ConversionServiceAdapterRsqlArgumentsConverter
 import com.github.manosbatsis.vaultaire.plugin.rsql.withRsql
+import com.github.manosbatsis.vaultaire.util.ResultsPage
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -59,7 +60,7 @@ import java.util.UUID
  */
 @RestController
 @Tag(name = "Yo Services", description = "Yo operation endpoints")
-@RequestMapping(path = arrayOf("api/yo", "{nodeName}/api/yo"))
+@RequestMapping(path = ["api/yo", "{nodeName}/api/yo"])
 class YoController {
 
     companion object {
